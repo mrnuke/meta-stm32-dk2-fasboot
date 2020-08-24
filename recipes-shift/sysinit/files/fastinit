@@ -1,0 +1,4 @@
+#!/bin/sh
+
+/usr/bin/glmark2-es2-drm &
+exec /sbin/init

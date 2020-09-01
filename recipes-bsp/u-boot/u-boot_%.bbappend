@@ -20,6 +20,7 @@ SRC_URI += "file://0002-stm32mp1-Add-support-for-falcon-mode-boot.patch"
 SRC_URI += "file://0003-mmc-stm32_sdmmc2-Use-mmc_of_parse-to-read-host-capab.patch"
 SRC_URI += "file://baudrate.cfg"
 SRC_URI += "file://boot-delay.cfg"
+SRC_URI += "file://falcon-mode.cfg"
 
 SPL_BINARY = "spl/u-boot-spl.stm32"
 SPL_BINARYNAME = "${@os.path.basename(d.getVar("SPL_BINARY"))}"

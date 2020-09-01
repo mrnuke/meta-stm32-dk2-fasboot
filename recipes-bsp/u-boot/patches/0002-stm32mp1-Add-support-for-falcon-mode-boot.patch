@@ -1,0 +1,96 @@
+From bb23e7dfa68db1715327c5faf0e52160bb30d8ca Mon Sep 17 00:00:00 2001
+From: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+Date: Fri, 21 Aug 2020 11:25:53 -0500
+Subject: [PATCH 2/3] stm32mp1: Add support for falcon mode boot
+
+Falcon mode requires a board-specific mechanism to select between
+fast and normal boot. This is done via spl_start_uboot()
+
+Use the B2 button as the selection mechanism. This is connected to
+GPIO PA13. Incidentally, this GPIO is already accessible via the
+"st,fastboot-gpios" devicetree node.
+
+Offsets for raw MMC loading are defined. These are tentative.
+---
+ board/st/stm32mp1/spl.c    | 38 ++++++++++++++++++++++++++++++++++++++
+ include/configs/stm32mp1.h |  8 ++++++++
+ 2 files changed, 46 insertions(+)
+
+diff --git a/board/st/stm32mp1/spl.c b/board/st/stm32mp1/spl.c
+index a6a41780c9..186f7036be 100644
+--- a/board/st/stm32mp1/spl.c
++++ b/board/st/stm32mp1/spl.c
+@@ -8,6 +8,7 @@
+ #include <init.h>
+ #include <asm/io.h>
+ #include <asm/arch/sys_proto.h>
++#include <asm/gpio.h>
+ #include <linux/bitops.h>
+ #include <linux/delay.h>
+ #include "../common/stpmic1.h"
+@@ -29,6 +30,43 @@ int board_early_init_f(void)
+ 	return 0;
+ }
+ 
++#if IS_ENABLED(CONFIG_SPL_OS_BOOT)
++int spl_start_uboot(void)
++{
++	ofnode node;
++	struct gpio_desc gpio;
++	int boot_uboot = 1;
++
++	node = ofnode_path("/config");
++	if (!ofnode_valid(node)) {
++		pr_warn("%s: no /config node?\n", __func__);
++		return 0;
++	}
++	if (gpio_request_by_name_nodev(node, "st,fastboot-gpios", 0,
++		&gpio, GPIOD_IS_IN)) {
++		pr_warn("%s: could not find a /config/st,fastboot-gpios\n",
++		      __func__);
++		return 1;
++		}
++
++		boot_uboot = dm_gpio_get_value(&gpio);
++	dm_gpio_free(NULL, &gpio);
++
++	return boot_uboot;
++}
++
++#if IS_ENABLED(CONFIG_ARMV7_NONSEC)
++/*
++ * A bit of a hack, but armv7_boot_nonsec() is provided by bootm.c. This is not
++ * available in SPL, so we have to provide an implementation.
++ */
++bool armv7_boot_nonsec(void)
++{
++	return 0;
++}
++#endif /* CONFIG_ARMV7_NONSEC */
++#endif /* CONFIG_SPL_OS_BOOT */
++
+ #ifdef CONFIG_DEBUG_UART_BOARD_INIT
+ void board_debug_uart_init(void)
+ {
+diff --git a/include/configs/stm32mp1.h b/include/configs/stm32mp1.h
+index 9a08cbeb79..a05df7ec7d 100644
+--- a/include/configs/stm32mp1.h
++++ b/include/configs/stm32mp1.h
+@@ -10,6 +10,14 @@
+ #include <linux/sizes.h>
+ #include <asm/arch/stm32.h>
+ 
++#define CONFIG_SYS_MMCSD_RAW_MODE_KERNEL_SECTOR 5154
++#define CONFIG_SYS_MMCSD_RAW_MODE_ARGS_SECTOR 38912
++#define CONFIG_SYS_MMCSD_RAW_MODE_ARGS_SECTORS 512
++#define CONFIG_SYS_SPI_KERNEL_OFFS 0
++#define CONFIG_SYS_SPI_ARGS_OFFS 0
++#define CONFIG_SYS_SPI_ARGS_SIZE 0
++#define CONFIG_SYS_SPL_ARGS_ADDR 0xc4000000
++
+ #ifndef CONFIG_TFABOOT
+ /* PSCI support */
+ #define CONFIG_ARMV7_SECURE_BASE		STM32_SYSRAM_BASE
+-- 
+2.25.4
+

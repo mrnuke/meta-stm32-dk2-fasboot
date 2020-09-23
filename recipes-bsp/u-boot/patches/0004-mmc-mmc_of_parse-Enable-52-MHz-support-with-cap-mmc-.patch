@@ -1,0 +1,36 @@
+From 6d5a97d7b592597a6b27c32c2529daaa77fd37f4 Mon Sep 17 00:00:00 2001
+From: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+Date: Thu, 10 Sep 2020 12:46:50 -0500
+Subject: [PATCH] mmc: mmc_of_parse: Enable 52 MHz support with
+ "cap-mmc-highspeed"
+
+"cap-mmc-highspeed" enables support for 26 MHz MMC, but there is no
+additional flag to enable 52 MHz MMC. In Linux. "cap-mmc-highspeed"
+is used for MMC HS at both 26MHz and 52MHz.
+
+Use the same approach and enable MMC_CAP(MMC_HS_52) host capability
+when "cap-mmc-highspeed" is found in the devicetree. In the event an
+MMC card doesn't support 52 MHz, it will be clocked at a speed based
+on its EXT CSD, even on 52 MHz host controllers
+
+Signed-off-by: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+---
+ drivers/mmc/mmc-uclass.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/mmc/mmc-uclass.c b/drivers/mmc/mmc-uclass.c
+index 90690c8d1e..6d2310eff3 100644
+--- a/drivers/mmc/mmc-uclass.c
++++ b/drivers/mmc/mmc-uclass.c
+@@ -198,7 +198,7 @@ int mmc_of_parse(struct udevice *dev, struct mmc_config *cfg)
+ 	if (dev_read_bool(dev, "cap-sd-highspeed"))
+ 		cfg->host_caps |= MMC_CAP(SD_HS);
+ 	if (dev_read_bool(dev, "cap-mmc-highspeed"))
+-		cfg->host_caps |= MMC_CAP(MMC_HS);
++		cfg->host_caps |= MMC_CAP(MMC_HS) | MMC_CAP(MMC_HS_52);
+ 	if (dev_read_bool(dev, "sd-uhs-sdr12"))
+ 		cfg->host_caps |= MMC_CAP(UHS_SDR12);
+ 	if (dev_read_bool(dev, "sd-uhs-sdr25"))
+-- 
+2.25.4
+

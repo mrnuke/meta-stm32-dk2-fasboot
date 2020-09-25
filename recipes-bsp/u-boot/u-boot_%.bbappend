@@ -22,6 +22,7 @@ SRC_URI += "file://0004-mmc-mmc_of_parse-Enable-52-MHz-support-with-cap-mmc-.pat
 SRC_URI += "file://baudrate.cfg"
 SRC_URI += "file://boot-delay.cfg"
 SRC_URI += "file://falcon-mode.cfg"
+SRC_URI += "file://optee.cfg"
 
 SPL_BINARY = "spl/u-boot-spl.stm32"
 SPL_BINARYNAME = "${@os.path.basename(d.getVar("SPL_BINARY"))}"
@@ -32,6 +33,22 @@ UBOOT_DEPLOY_ELF_FILES ?= ""
 UBOOT_ELF = "u-boot"
 SPL_ELF = "${@d.getVar('SPL_BINARY').split('.')[0]}"
 SPL_ELF_NAME  = "${@os.path.basename(d.getVar("SPL_ELF"))}.elf"
+OPTEE_TZDRAM_START ?= ""
+
+replace_config() {
+	local cfg=$1
+	local value=$2
+
+	for defconfig in ${UBOOT_MACHINE}; do
+		sed "s/\(${cfg}\)=.*/\1=${value}/" -i ${B}/${defconfig}/.config
+	done
+}
+
+do_configure_append() {
+	if [ -n "${OPTEE_TZDRAM_START}" ]; then
+		replace_config "CONFIG_OPTEE_TZDRAM_BASE" "${OPTEE_TZDRAM_START}"
+	fi
+}
 
 # -----------------------------------------------------------------------------
 # We want to pass 'DEVICE_TREE=' option to u-boot, which the core recipe does

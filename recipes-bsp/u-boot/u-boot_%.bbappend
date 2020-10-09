@@ -9,7 +9,7 @@
 #     UBOOT_CONFIG[nonsec] = "stm32mp15_basic_defconfig,,u-boot.img"
 #
 
-SRCREV = "v2020.10-rc4"
+SRCREV = "v2020.10"
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=5a7450c57ffe5ae63fd732446b988025"
 
 FILESEXTRAPATHS_append := ":${THISDIR}/patches"
@@ -19,6 +19,7 @@ SRC_URI += "file://0001-stm32mp1-Add-support-for-baudrates-higher-than-11520.pat
 SRC_URI += "file://0002-stm32mp1-Add-support-for-falcon-mode-boot.patch"
 SRC_URI += "file://0003-mmc-stm32_sdmmc2-Use-mmc_of_parse-to-read-host-capab.patch"
 SRC_URI += "file://0004-mmc-mmc_of_parse-Enable-52-MHz-support-with-cap-mmc-.patch"
+SRC_URI += "file://1001-Revert-Fix-data-abort-caused-by-mis-aligning-FIT-dat.patch"
 SRC_URI += "file://baudrate.cfg"
 SRC_URI += "file://boot-delay.cfg"
 SRC_URI += "file://falcon-mode.cfg"

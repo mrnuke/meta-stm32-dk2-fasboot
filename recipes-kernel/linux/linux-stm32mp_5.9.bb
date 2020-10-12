@@ -9,13 +9,13 @@ KERNEL_UIMAGE_LOADADDRESS ?= "0xC2000040"
 inherit kernel
 require recipes-kernel/linux/linux-yocto.inc
 
-LINUX_VERSION = "5.8"
-LINUX_SUBVERSION = "8"
+LINUX_VERSION = "5.9"
+LINUX_SUBVERSION = "1"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/config-${LINUX_VERSION}:"
 
 SRC_URI = "https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${LINUX_VERSION}.${LINUX_SUBVERSION}.tar.xz"
-SRC_URI[sha256sum] = "33f61bb3e99a4b8bcc0fdfc7e7d72071795bccba465184665a9ae7bd7f00a976"
+SRC_URI[sha256sum] = "ba4a11e93896305835c630969cf330ae808b0e43f09b375b510cde1bd0efc036"
 
 SRC_URI += "file://fragment-01-multiv7_cleanup.cfg"
 SRC_URI += "file://fragment-02-multiv7_addons.cfg"

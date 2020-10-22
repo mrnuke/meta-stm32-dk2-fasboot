@@ -40,3 +40,5 @@ KBUILD_DEFCONFIG_stm32mp1 ?= "multi_v7_defconfig"
 KCONFIG_MODE = "alldefconfig"
 
 KERNEL_EXTRA_ARGS += "LOADADDR=${KERNEL_UIMAGE_LOADADDRESS}"
+
+do_deploy[sstate-outputdirs] = "${DEPLOY_DIR_IMAGE}/kernel"

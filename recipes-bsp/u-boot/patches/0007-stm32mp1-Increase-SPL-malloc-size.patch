@@ -1,0 +1,27 @@
+From f41b74dc85c31e6ed572492125826b104edf06f7 Mon Sep 17 00:00:00 2001
+From: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+Date: Tue, 27 Oct 2020 11:06:00 -0500
+Subject: [PATCH 7/9] stm32mp1: Increase SPL malloc() size
+
+Increase malloc size enough to accomodate a FIT image with linux and
+OP-TEE.
+---
+ include/configs/stm32mp1.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/configs/stm32mp1.h b/include/configs/stm32mp1.h
+index a05df7ec7d..0bdc24af42 100644
+--- a/include/configs/stm32mp1.h
++++ b/include/configs/stm32mp1.h
+@@ -65,7 +65,7 @@
+ #define CONFIG_SPL_BSS_START_ADDR	0xC0200000
+ #define CONFIG_SPL_BSS_MAX_SIZE		0x00100000
+ #define CONFIG_SYS_SPL_MALLOC_START	0xC0300000
+-#define CONFIG_SYS_SPL_MALLOC_SIZE	0x00100000
++#define CONFIG_SYS_SPL_MALLOC_SIZE	0x01D00000
+ 
+ /* limit SYSRAM usage to first 128 KB */
+ #define CONFIG_SPL_MAX_SIZE		0x00020000
+-- 
+2.26.2
+

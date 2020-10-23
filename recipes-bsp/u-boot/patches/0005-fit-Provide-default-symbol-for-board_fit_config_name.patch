@@ -1,0 +1,432 @@
+From 9f68932b554e9e8ab00c6372a7ea16670bbceae9 Mon Sep 17 00:00:00 2001
+From: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+Date: Thu, 15 Oct 2020 13:50:42 -0500
+Subject: [PATCH 5/8] fit: Provide default symbol for
+ board_fit_config_name_match()
+
+board_fit_config_name_match() is required when CONFIG_MULTI_DTB_FIT
+is selected. However, this symbol is also required when enabling FIT
+support in SPL.
+
+Several board/ or arch/ users which wanted to use FIT in SPL have had
+to implement board_fit_config_name_match(). Of these implementations,
+19 are nearly-identical stubs.
+
+To reduce code duplication, provide a default weak implementation.
+While I'm strongly opposed to weak symbols, defining a new interface
+to select the configuration is beyond the scope of this patch.
+
+Signed-off-by: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+---
+ arch/arm/cpu/armv8/fsl-layerscape/spl.c |  9 ---------
+ arch/arm/mach-rockchip/spl.c            | 10 ----------
+ arch/arm/mach-zynqmp/spl.c              | 10 ----------
+ board/AndesTech/ax25-ae350/ax25-ae350.c |  8 --------
+ board/advantech/imx8qm_rom7720_a1/spl.c | 10 ----------
+ board/beacon/imx8mm/spl.c               | 10 ----------
+ board/emulation/qemu-riscv/qemu-riscv.c |  8 --------
+ board/freescale/imx8mm_evk/spl.c        | 10 ----------
+ board/freescale/imx8mn_evk/spl.c        | 10 ----------
+ board/freescale/imx8mp_evk/spl.c        | 10 ----------
+ board/freescale/imx8mq_evk/spl.c        | 10 ----------
+ board/freescale/imx8qm_mek/spl.c        | 10 ----------
+ board/freescale/imx8qxp_mek/spl.c       | 10 ----------
+ board/google/imx8mq_phanbell/spl.c      | 10 ----------
+ board/liebherr/display5/spl.c           |  7 -------
+ board/liebherr/mccmon6/spl.c            |  7 -------
+ board/sifive/fu540/spl.c                |  8 --------
+ board/technexion/pico-imx8mq/spl.c      | 10 ----------
+ board/toradex/verdin-imx8mm/spl.c       | 10 ----------
+ common/common_fit.c                     |  7 +++++++
+ 20 files changed, 7 insertions(+), 177 deletions(-)
+
+diff --git a/arch/arm/cpu/armv8/fsl-layerscape/spl.c b/arch/arm/cpu/armv8/fsl-layerscape/spl.c
+index 77724336d6..2df64f6e3e 100644
+--- a/arch/arm/cpu/armv8/fsl-layerscape/spl.c
++++ b/arch/arm/cpu/armv8/fsl-layerscape/spl.c
+@@ -135,13 +135,4 @@ int spl_start_uboot(void)
+ 	return 1;
+ }
+ #endif	/* CONFIG_SPL_OS_BOOT */
+-#ifdef CONFIG_SPL_LOAD_FIT
+-__weak int board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return 0;
+-}
+-#endif
+ #endif /* CONFIG_SPL_BUILD */
+diff --git a/arch/arm/mach-rockchip/spl.c b/arch/arm/mach-rockchip/spl.c
+index f148d48b6a..ff3693d33b 100644
+--- a/arch/arm/mach-rockchip/spl.c
++++ b/arch/arm/mach-rockchip/spl.c
+@@ -150,13 +150,3 @@ void board_init_f(ulong dummy)
+ #endif
+ 	preloader_console_init();
+ }
+-
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int __weak board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return 0;
+-}
+-#endif
+diff --git a/arch/arm/mach-zynqmp/spl.c b/arch/arm/mach-zynqmp/spl.c
+index 9dd61e25f6..88386b23e5 100644
+--- a/arch/arm/mach-zynqmp/spl.c
++++ b/arch/arm/mach-zynqmp/spl.c
+@@ -119,13 +119,3 @@ int spl_start_uboot(void)
+ 	return 0;
+ }
+ #endif
+-
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return -1;
+-}
+-#endif
+diff --git a/board/AndesTech/ax25-ae350/ax25-ae350.c b/board/AndesTech/ax25-ae350/ax25-ae350.c
+index 59a43e4dcc..10a9fdcecb 100644
+--- a/board/AndesTech/ax25-ae350/ax25-ae350.c
++++ b/board/AndesTech/ax25-ae350/ax25-ae350.c
+@@ -117,11 +117,3 @@ void board_boot_order(u32 *spl_boot_list)
+ 		spl_boot_list[i] = boot_devices[i];
+ }
+ #endif
+-
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* boot using first FIT config */
+-	return 0;
+-}
+-#endif
+diff --git a/board/advantech/imx8qm_rom7720_a1/spl.c b/board/advantech/imx8qm_rom7720_a1/spl.c
+index a2386c9ef0..81fa48cf3b 100644
+--- a/board/advantech/imx8qm_rom7720_a1/spl.c
++++ b/board/advantech/imx8qm_rom7720_a1/spl.c
+@@ -193,16 +193,6 @@ void spl_board_prepare_for_boot(void)
+ #endif
+ }
+ 
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return 0;
+-}
+-#endif
+-
+ void board_init_f(ulong dummy)
+ {
+ 	/* Clear global data */
+diff --git a/board/beacon/imx8mm/spl.c b/board/beacon/imx8mm/spl.c
+index 4ee10cf855..21cde8e685 100644
+--- a/board/beacon/imx8mm/spl.c
++++ b/board/beacon/imx8mm/spl.c
+@@ -48,16 +48,6 @@ void spl_board_init(void)
+ 	debug("Normal Boot\n");
+ }
+ 
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return 0;
+-}
+-#endif
+-
+ #define UART_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_FSEL1)
+ #define WDOG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_ODE | PAD_CTL_PUE | PAD_CTL_PE)
+ 
+diff --git a/board/emulation/qemu-riscv/qemu-riscv.c b/board/emulation/qemu-riscv/qemu-riscv.c
+index dcfd3f20be..f2d44a7523 100644
+--- a/board/emulation/qemu-riscv/qemu-riscv.c
++++ b/board/emulation/qemu-riscv/qemu-riscv.c
+@@ -61,11 +61,3 @@ u32 spl_boot_device(void)
+ 	return BOOT_DEVICE_RAM;
+ }
+ #endif
+-
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* boot using first FIT config */
+-	return 0;
+-}
+-#endif
+diff --git a/board/freescale/imx8mm_evk/spl.c b/board/freescale/imx8mm_evk/spl.c
+index 19c8a5aa23..ea3c8296c3 100644
+--- a/board/freescale/imx8mm_evk/spl.c
++++ b/board/freescale/imx8mm_evk/spl.c
+@@ -53,16 +53,6 @@ void spl_board_init(void)
+ 	puts("Normal Boot\n");
+ }
+ 
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return 0;
+-}
+-#endif
+-
+ #define UART_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_FSEL1)
+ #define WDOG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_ODE | PAD_CTL_PUE | PAD_CTL_PE)
+ 
+diff --git a/board/freescale/imx8mn_evk/spl.c b/board/freescale/imx8mn_evk/spl.c
+index dd38c1015c..e5fe472bfc 100644
+--- a/board/freescale/imx8mn_evk/spl.c
++++ b/board/freescale/imx8mn_evk/spl.c
+@@ -51,16 +51,6 @@ void spl_board_init(void)
+ 		printf("Failed to find clock node. Check device tree\n");
+ }
+ 
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return 0;
+-}
+-#endif
+-
+ #define UART_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_FSEL1)
+ #define WDOG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_ODE | PAD_CTL_PUE | PAD_CTL_PE)
+ 
+diff --git a/board/freescale/imx8mp_evk/spl.c b/board/freescale/imx8mp_evk/spl.c
+index 3214718e62..4ba662a05a 100644
+--- a/board/freescale/imx8mp_evk/spl.c
++++ b/board/freescale/imx8mp_evk/spl.c
+@@ -94,16 +94,6 @@ int power_init_board(void)
+ }
+ #endif
+ 
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return 0;
+-}
+-#endif
+-
+ /* Do not use BSS area in this phase */
+ void board_init_f(ulong dummy)
+ {
+diff --git a/board/freescale/imx8mq_evk/spl.c b/board/freescale/imx8mq_evk/spl.c
+index 42183ed5aa..5bf10bbcce 100644
+--- a/board/freescale/imx8mq_evk/spl.c
++++ b/board/freescale/imx8mq_evk/spl.c
+@@ -201,16 +201,6 @@ void spl_board_init(void)
+ 	puts("Normal Boot\n");
+ }
+ 
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return 0;
+-}
+-#endif
+-
+ void board_init_f(ulong dummy)
+ {
+ 	int ret;
+diff --git a/board/freescale/imx8qm_mek/spl.c b/board/freescale/imx8qm_mek/spl.c
+index 9dee12a2c6..483c090918 100644
+--- a/board/freescale/imx8qm_mek/spl.c
++++ b/board/freescale/imx8qm_mek/spl.c
+@@ -46,16 +46,6 @@ void spl_board_prepare_for_boot(void)
+ 	imx8_power_off_pd_devices(NULL, 0);
+ }
+ 
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return 0;
+-}
+-#endif
+-
+ void board_init_f(ulong dummy)
+ {
+ 	/* Clear global data */
+diff --git a/board/freescale/imx8qxp_mek/spl.c b/board/freescale/imx8qxp_mek/spl.c
+index 881d297cf1..289cc0386b 100644
+--- a/board/freescale/imx8qxp_mek/spl.c
++++ b/board/freescale/imx8qxp_mek/spl.c
+@@ -64,16 +64,6 @@ void spl_board_prepare_for_boot(void)
+ 	imx8_power_off_pd_devices(NULL, 0);
+ }
+ 
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return 0;
+-}
+-#endif
+-
+ void board_init_f(ulong dummy)
+ {
+ 	/* Clear global data */
+diff --git a/board/google/imx8mq_phanbell/spl.c b/board/google/imx8mq_phanbell/spl.c
+index 06a3f4c1aa..2a9d80c85e 100644
+--- a/board/google/imx8mq_phanbell/spl.c
++++ b/board/google/imx8mq_phanbell/spl.c
+@@ -138,16 +138,6 @@ void spl_board_init(void)
+ 	puts("Normal Boot\n");
+ }
+ 
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return 0;
+-}
+-#endif
+-
+ void board_init_f(ulong dummy)
+ {
+ 	int ret;
+diff --git a/board/liebherr/display5/spl.c b/board/liebherr/display5/spl.c
+index 23959c2557..0dc49b75bd 100644
+--- a/board/liebherr/display5/spl.c
++++ b/board/liebherr/display5/spl.c
+@@ -377,13 +377,6 @@ void board_boot_order(u32 *spl_boot_list)
+ 
+ void reset_cpu(ulong addr) {}
+ 
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	return 0;
+-}
+-#endif
+-
+ #ifdef CONFIG_SPL_OS_BOOT
+ /* Return: 1 - boot to U-Boot. 0 - boot OS (falcon mode) */
+ int spl_start_uboot(void)
+diff --git a/board/liebherr/mccmon6/spl.c b/board/liebherr/mccmon6/spl.c
+index 56eae3b4e9..627a929e29 100644
+--- a/board/liebherr/mccmon6/spl.c
++++ b/board/liebherr/mccmon6/spl.c
+@@ -336,13 +336,6 @@ void board_boot_order(u32 *spl_boot_list)
+ 	}
+ }
+ 
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	return 0;
+-}
+-#endif
+-
+ #ifdef CONFIG_SPL_OS_BOOT
+ int spl_start_uboot(void)
+ {
+diff --git a/board/sifive/fu540/spl.c b/board/sifive/fu540/spl.c
+index fe27316b2d..a9ee81ab3e 100644
+--- a/board/sifive/fu540/spl.c
++++ b/board/sifive/fu540/spl.c
+@@ -78,11 +78,3 @@ u32 spl_boot_device(void)
+ 		return BOOT_DEVICE_MMC1;
+ 	}
+ }
+-
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* boot using first FIT config */
+-	return 0;
+-}
+-#endif
+diff --git a/board/technexion/pico-imx8mq/spl.c b/board/technexion/pico-imx8mq/spl.c
+index b181f797a7..c9bc4c91c0 100644
+--- a/board/technexion/pico-imx8mq/spl.c
++++ b/board/technexion/pico-imx8mq/spl.c
+@@ -181,16 +181,6 @@ void spl_board_init(void)
+ 	puts("Normal Boot\n");
+ }
+ 
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return 0;
+-}
+-#endif
+-
+ void board_init_f(ulong dummy)
+ {
+ 	int ret;
+diff --git a/board/toradex/verdin-imx8mm/spl.c b/board/toradex/verdin-imx8mm/spl.c
+index cc78c5666b..0706ca703d 100644
+--- a/board/toradex/verdin-imx8mm/spl.c
++++ b/board/toradex/verdin-imx8mm/spl.c
+@@ -60,16 +60,6 @@ void spl_board_init(void)
+ 	puts("Normal Boot\n");
+ }
+ 
+-#ifdef CONFIG_SPL_LOAD_FIT
+-int board_fit_config_name_match(const char *name)
+-{
+-	/* Just empty function now - can't decide what to choose */
+-	debug("%s: %s\n", __func__, name);
+-
+-	return 0;
+-}
+-#endif
+-
+ #define UART_PAD_CTRL	(PAD_CTL_PUE | PAD_CTL_PE | PAD_CTL_DSE4)
+ #define WDOG_PAD_CTRL	(PAD_CTL_DSE6 | PAD_CTL_ODE | PAD_CTL_PUE | PAD_CTL_PE)
+ 
+diff --git a/common/common_fit.c b/common/common_fit.c
+index a993308100..1af6a2a5d1 100644
+--- a/common/common_fit.c
++++ b/common/common_fit.c
+@@ -22,6 +22,13 @@ ulong fdt_getprop_u32(const void *fdt, int node, const char *prop)
+ 	return fdt32_to_cpu(*cell);
+ }
+ 
++__weak int board_fit_config_name_match(const char *name)
++{
++	pr_alert("%s: Not implemented\n", __func__);
++
++	return -1;
++}
++
+ /*
+  * Iterate over all /configurations subnodes and call a platform specific
+  * function to find the matching configuration.
+-- 
+2.26.2
+

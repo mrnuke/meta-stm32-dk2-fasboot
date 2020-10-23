@@ -19,11 +19,15 @@ SRC_URI += "file://0001-stm32mp1-Add-support-for-baudrates-higher-than-11520.pat
 SRC_URI += "file://0002-stm32mp1-Add-support-for-falcon-mode-boot.patch"
 SRC_URI += "file://0003-mmc-stm32_sdmmc2-Use-mmc_of_parse-to-read-host-capab.patch"
 SRC_URI += "file://0004-mmc-mmc_of_parse-Enable-52-MHz-support-with-cap-mmc-.patch"
+SRC_URI += "file://0005-fit-Provide-default-symbol-for-board_fit_config_name.patch"
+SRC_URI += "file://0006-spl-fit-Prefer-a-malloc-d-buffer-for-loading-images.patch"
+SRC_URI += "file://0007-stm32mp1-Increase-SPL-malloc-size.patch"
 SRC_URI += "file://1001-Revert-Fix-data-abort-caused-by-mis-aligning-FIT-dat.patch"
 SRC_URI += "file://baudrate.cfg"
 SRC_URI += "file://boot-delay.cfg"
 SRC_URI += "file://falcon-mode.cfg"
 SRC_URI += "file://optee.cfg"
+SRC_URI += "file://fit-image.cfg"
 
 SPL_BINARY = "spl/u-boot-spl.stm32"
 SPL_BINARYNAME = "${@os.path.basename(d.getVar("SPL_BINARY"))}"
@@ -36,12 +40,20 @@ SPL_ELF = "${@d.getVar('SPL_BINARY').split('.')[0]}"
 SPL_ELF_NAME  = "${@os.path.basename(d.getVar("SPL_ELF"))}.elf"
 OPTEE_TZDRAM_START ?= ""
 
+replace_config_variable() {
+	local dotconfig=$1
+	local cfgname=$2
+	local value=$3
+
+	sed "s/\(${cfgname}\)=.*/\1=${value}/" -i ${dotconfig}
+}
+
 replace_config() {
 	local cfg=$1
 	local value=$2
 
 	for defconfig in ${UBOOT_MACHINE}; do
-		sed "s/\(${cfg}\)=.*/\1=${value}/" -i ${B}/${defconfig}/.config
+		replace_config_variable "${B}/${defconfig}/.config" "${cfg}" "${value}"
 	done
 }
 
@@ -77,6 +89,7 @@ do_compile_append() {
                         continue
                     fi
 
+                    replace_config_variable ${B}/${defconfig}/.config "CONFIG_OF_LIST" \""${devicetree}\""
                     oe_runmake -C ${S} O=${B}/${defconfig} DEVICE_TREE=${devicetree}
 
                     local binarysuffix=$(echo ${binary} | cut -d'.' -f2)

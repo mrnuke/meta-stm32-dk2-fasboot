@@ -21,7 +21,9 @@ The layer setup should look like the following:
 	==========================================================================
 	meta                  <path-to>/openembedded-core/meta  5
 	meta-oe               <path-to>/meta-openembedded/meta-oe  6
+	meta-python           <path-to>/meta-openembedded/meta-python  7
 	meta-horseshift       <path-to>/meta-horseshift  6
+
 
 ### Build the images
 
@@ -46,32 +48,29 @@ indicated in bold are hardcoded and the partition __must__ start there.
 ### Manual installation
 
 After the build, images are found in __tmp-glibc/deploy/images/stm32mp1/__
+NOTE: replace __-ev1__ with __-dk2__ if using the smaller DK2 board.
 
 	$ cp bootloader/u-boot-spl-stm32mp157c-ev1-nonsec.stm32 /dev/mmcblk0p1
 	$ cp bootloader/u-boot-stm32mp157c-ev1-nonsec.img /dev/mmcblk0p3
-	$ cp uImage /dev/mmcblk0p4
+	$ cp fit-image-unsigned-stm32mp1 /dev/mmcblk0p4
 	$ cp image-horseshift-stm32mp1.ext4 /dev/mmcblk0p7
 
 #### One-time u-boot configuration -- falcon mode
 
 This step requires using the serial console to send u-boot commands.
 
- * Boot the board by holding by holding the __User PA13__ button.
+ * Boot the board by holding by holding the __User PA13__ or __USER2__ button.
  * Keep holding the button until "Hit any key to stop autoboot" message appears.
  * At that point, hit any key and wait for the terminal prompt.
 
 Finally, enter the following command to configure falcon mode:
 
-	> load mmc 0:7 $loadaddr boot/uImage
-	> load mmc 0:7 $fdt_addr_r boot/stm32mp157c-ev1.dtb
-
-	> fdt addr $fdt_addr_r
-	> fdt rm /psci
+	> load mmc 0:7 $loadaddr boot/fit-image-unsigned-stm32mp1
 
 	> setenv bootargs console=ttySTM0,2000000 root=/dev/mmcblk0p7 init=/bin/fastinit
 	> setenv bootm_boot_mode sec
 
-	> spl export fdt $loadaddr - $fdt_addr_r
+	> spl export fdt $loadaddr#secure@stm32mp157c-ev1.dtb
 	> mmc write $fdtargsaddr 0x9800 0x8000
 
 Reboot the board, and do not hold any buttons. The kernel should now boot.

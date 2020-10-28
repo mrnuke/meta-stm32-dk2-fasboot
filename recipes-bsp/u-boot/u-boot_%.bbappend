@@ -65,10 +65,10 @@ do_compile_append() {
 
     for devicetree in ${UBOOT_DEVICETREES}; do
         unset i
-        for config in ${UBOOT_MACHINE}; do
+        for defconfig in ${UBOOT_MACHINE}; do
             i=$(expr $i + 1);
             unset j
-            for type in ${UBOOT_CONFIG}; do
+            for config_name in ${UBOOT_CONFIG}; do
                 j=$(expr $j + 1);
                 unset k
                 for binary in ${UBOOT_BINARIES}; do
@@ -77,15 +77,15 @@ do_compile_append() {
                         continue
                     fi
 
-                    oe_runmake -C ${S} O=${B}/${config} DEVICE_TREE=${devicetree}
+                    oe_runmake -C ${S} O=${B}/${defconfig} DEVICE_TREE=${devicetree}
 
                     local binarysuffix=$(echo ${binary} | cut -d'.' -f2)
-                    install -m 644 ${B}/${config}/${binary} ${B}/${config}/u-boot-${devicetree}-${type}.${binarysuffix}
-                    install -m 644 ${B}/${config}/${SPL_BINARY} ${B}/${config}/${SPL_NAME}-${devicetree}-${type}.stm32
+                    install -m 644 ${B}/${defconfig}/${binary} ${B}/${defconfig}/u-boot-${devicetree}-${config_name}.${binarysuffix}
+                    install -m 644 ${B}/${defconfig}/${SPL_BINARY} ${B}/${defconfig}/${SPL_NAME}-${devicetree}-${config_name}.stm32
 
                     if [ ${@d.getVar('UBOOT_DEPLOY_ELF_FILES')} ]; then
-                        install -m 755 ${B}/${config}/${UBOOT_ELF} ${B}/${config}/u-boot-${devicetree}-${type}.${UBOOT_ELF_SUFFIX}
-                        install -m 755 ${B}/${config}/${SPL_ELF} ${B}/${config}/${SPL_ELF_NAME}-${devicetree}-${type}
+                        install -m 755 ${B}/${defconfig}/${UBOOT_ELF} ${B}/${defconfig}/u-boot-${devicetree}-${config_name}.${UBOOT_ELF_SUFFIX}
+                        install -m 755 ${B}/${defconfig}/${SPL_ELF} ${B}/${defconfig}/${SPL_ELF_NAME}-${devicetree}-${config_name}
                     fi
 
                 done
@@ -105,10 +105,10 @@ do_deploy() {
 
     for devicetree in ${UBOOT_DEVICETREES}; do
         unset i
-        for config in ${UBOOT_MACHINE}; do
+        for defconfig in ${UBOOT_MACHINE}; do
             i=$(expr $i + 1);
             unset j
-            for type in ${UBOOT_CONFIG}; do
+            for config_name in ${UBOOT_CONFIG}; do
                 j=$(expr $j + 1);
                 unset k
                 for binary in ${UBOOT_BINARIES}; do
@@ -118,12 +118,12 @@ do_deploy() {
                     fi
 
                     binarysuffix=$(echo ${binary} | cut -d'.' -f2)
-                    install -m 644 ${B}/${config}/u-boot-${devicetree}-${type}.${binarysuffix} ${DEPLOYDIR}
-                    install -m 644 ${B}/${config}/${SPL_NAME}-${devicetree}-${type}.stm32 ${DEPLOYDIR}
+                    install -m 644 ${B}/${defconfig}/u-boot-${devicetree}-${config_name}.${binarysuffix} ${DEPLOYDIR}
+                    install -m 644 ${B}/${defconfig}/${SPL_NAME}-${devicetree}-${config_name}.stm32 ${DEPLOYDIR}
 
                     if [ ${@d.getVar('UBOOT_DEPLOY_ELF_FILES')} ]; then
-                        install -m 755 ${B}/${config}/u-boot-${devicetree}-${type}.${UBOOT_ELF_SUFFIX} ${DEPLOYDIR}
-                        install -m 755 ${B}/${config}/${SPL_ELF_NAME}-${devicetree}-${type} ${DEPLOYDIR}
+                        install -m 755 ${B}/${defconfig}/u-boot-${devicetree}-${config_name}.${UBOOT_ELF_SUFFIX} ${DEPLOYDIR}
+                        install -m 755 ${B}/${defconfig}/${SPL_ELF_NAME}-${devicetree}-${config_name} ${DEPLOYDIR}
                     fi
 
                 done

@@ -131,6 +131,13 @@ fitimage_assemble() {
 		${fit_image}
 }
 
+do_install() {
+	install -D -m 0644 ${B}/fitImage ${D}/boot/fit-image-unsigned-${KERNEL_FIT_NAME}.img
+	ln -snf fit-image-unsigned-${KERNEL_FIT_NAME}.img "${D}/boot/fit-image-unsigned-${KERNEL_FIT_LINK_NAME}"
+}
+
+FILES_${PN} = "/boot"
+
 do_deploy() {
 	install -m 0644 ${B}/fitImage ${DEPLOYDIR}/fit-image-unsigned-${KERNEL_FIT_NAME}.img
 	ln -snf fit-image-unsigned-${KERNEL_FIT_NAME}.img "${DEPLOYDIR}/fit-image-unsigned-${KERNEL_FIT_LINK_NAME}"

@@ -1,0 +1,60 @@
+From 948d5f55c61a1c4a45c69d3a935221bd316fbc8e Mon Sep 17 00:00:00 2001
+From: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+Date: Thu, 29 Oct 2020 09:25:04 -0500
+Subject: [PATCH 9/9] [HACK] stm32mp1: Drop call to tee_find_device()
+
+When tee_find_device() tries to probe a non-existing TEE from secure
+mode, a bad mode abort is generated. This is stupid, so remove the
+code that does this.
+---
+ arch/arm/mach-stm32mp/fdt.c | 28 ----------------------------
+ 1 file changed, 28 deletions(-)
+
+diff --git a/arch/arm/mach-stm32mp/fdt.c b/arch/arm/mach-stm32mp/fdt.c
+index 0de1d82291..f19c481a7c 100644
+--- a/arch/arm/mach-stm32mp/fdt.c
++++ b/arch/arm/mach-stm32mp/fdt.c
+@@ -220,30 +220,6 @@ static void stm32_fdt_disable(void *fdt, int offset, u32 addr,
+ 		       string, addr, name);
+ }
+ 
+-static void stm32_fdt_disable_optee(void *blob)
+-{
+-	int off, node;
+-
+-	/* Delete "optee" firmware node */
+-	off = fdt_node_offset_by_compatible(blob, -1, "linaro,optee-tz");
+-	if (off >= 0 && fdtdec_get_is_enabled(blob, off))
+-		fdt_del_node(blob, off);
+-
+-	/* Delete "optee@..." reserved-memory node */
+-	off = fdt_path_offset(blob, "/reserved-memory/");
+-	if (off < 0)
+-		return;
+-	for (node = fdt_first_subnode(blob, off);
+-	     node >= 0;
+-	     node = fdt_next_subnode(blob, node)) {
+-		if (strncmp(fdt_get_name(blob, node, NULL), "optee@", 6))
+-			continue;
+-
+-		if (fdt_del_node(blob, node))
+-			printf("Failed to remove optee reserved-memory node\n");
+-	}
+-}
+-
+ /*
+  * This function is called right before the kernel is booted. "blob" is the
+  * device tree that will be passed to the kernel.
+@@ -328,9 +304,5 @@ int ft_system_setup(void *blob, struct bd_info *bd)
+ 				       "st,package", pkg, false);
+ 	}
+ 
+-	if (!CONFIG_IS_ENABLED(OPTEE) ||
+-	    !tee_find_device(NULL, NULL, NULL, NULL))
+-		stm32_fdt_disable_optee(blob);
+-
+ 	return ret;
+ }
+-- 
+2.26.2
+

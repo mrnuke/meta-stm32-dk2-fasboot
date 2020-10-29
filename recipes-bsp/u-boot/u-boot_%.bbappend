@@ -22,6 +22,7 @@ SRC_URI += "file://0004-mmc-mmc_of_parse-Enable-52-MHz-support-with-cap-mmc-.pat
 SRC_URI += "file://0005-fit-Provide-default-symbol-for-board_fit_config_name.patch"
 SRC_URI += "file://0006-spl-fit-Prefer-a-malloc-d-buffer-for-loading-images.patch"
 SRC_URI += "file://0007-stm32mp1-Increase-SPL-malloc-size.patch"
+SRC_URI += "file://0008-HACK-stm32mp1-Drop-call-to-tee_find_device.patch"
 SRC_URI += "file://1001-Revert-Fix-data-abort-caused-by-mis-aligning-FIT-dat.patch"
 SRC_URI += "file://baudrate.cfg"
 SRC_URI += "file://boot-delay.cfg"

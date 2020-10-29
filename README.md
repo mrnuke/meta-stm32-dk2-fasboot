@@ -22,7 +22,7 @@ The layer setup should look like the following:
 	meta                  <path-to>/openembedded-core/meta  5
 	meta-oe               <path-to>/meta-openembedded/meta-oe  6
 	meta-python           <path-to>/meta-openembedded/meta-python  7
-	meta-horseshift       <path-to>/meta-horseshift  6
+	meta-horseshift       <path-to>/meta-horseshift  9
 
 
 ### Build the images

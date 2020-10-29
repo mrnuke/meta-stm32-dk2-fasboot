@@ -20,3 +20,4 @@ CORE_IMAGE_EXTRA_INSTALL += " \
 	"
 
 IMAGE_INSTALL_append = "kernel-image kernel-devicetree kernel-modules"
+IMAGE_INSTALL_append += "fit-image"

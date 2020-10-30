@@ -13,6 +13,8 @@ IMAGE_FEATURES += "\
 
 CORE_IMAGE_EXTRA_INSTALL += " \
 	fastinit \
+	optee-client \
+	optee-examples \
 	pv \
 	nano \
 	ldd \

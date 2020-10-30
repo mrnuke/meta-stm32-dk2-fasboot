@@ -7,6 +7,7 @@ that boot really fast. It depends on the following layers:
 
  * openembedded-core
  * meta-openembedded
+ * meta-linaro/meta-optee
 
 ### Layer Setup
 
@@ -22,6 +23,7 @@ The layer setup should look like the following:
 	meta                  <path-to>/openembedded-core/meta  5
 	meta-oe               <path-to>/meta-openembedded/meta-oe  6
 	meta-python           <path-to>/meta-openembedded/meta-python  7
+	meta-optee            <path-to>/meta-linaro/meta-optee  8
 	meta-horseshift       <path-to>/meta-horseshift  9
 
 

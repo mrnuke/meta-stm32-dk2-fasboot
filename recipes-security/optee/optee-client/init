@@ -1,0 +1,37 @@
+#!/bin/sh
+
+. /etc/init.d/functions
+
+TEESUP="/usr/sbin/tee-supplicant"
+PIDFILE="/var/run/tee-supplicant.pid"
+
+start()
+{
+        start-stop-daemon -S -x "$TEESUP" -m -p "$PIDFILE" -b
+}
+
+stop()
+{
+        start-stop-daemon -K -x "$TEESUP" -p "$PIDFILE"
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  status)
+        status "$TEESUP"
+        ;;
+  restart|reload)
+        stop
+        start
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|restart|reload|status}"
+        exit 1
+esac
+
+exit 0

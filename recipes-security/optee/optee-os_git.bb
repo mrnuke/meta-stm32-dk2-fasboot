@@ -42,6 +42,12 @@ python do_configure() {
 do_install() {
     install -d ${D}${nonarch_base_libdir}/firmware/
     install -m 644 ${B}/out/arm-plat-${OPTEE_PLATFORM}/core/*.bin ${D}${nonarch_base_libdir}/firmware/
+
+    install -d ${D}/usr/include/optee/export-user_ta/
+
+    for f in  ${B}/out/arm-plat-${OPTEE_PLATFORM}/export-ta_arm32/* ; do
+        cp -aR  $f ${D}/usr/include/optee/export-user_ta/
+    done
 }
 
 do_deploy() {
@@ -54,3 +60,5 @@ do_deploy() {
 addtask deploy before do_build after do_install
 
 FILES_${PN} = "${nonarch_base_libdir}/firmware/"
+FILES_${PN}-dev = "/usr/include/optee"
+INSANE_SKIP_${PN}-dev = "staticdev"

@@ -88,7 +88,7 @@ fitimage_emit_images_section() {
 
 	fitimage_emit_section_maint ${its_filename} imagestart
 
-	fitimage_emit_section_optee ${its_filename} "${kernelcount}" "${DEPLOY_DIR_IMAGE}/optee/tee.bin" "none"
+	fitimage_emit_section_optee ${its_filename} "${kernelcount}" "${STAGING_BASELIBDIR}/firmware/tee.bin" "none"
 	fitimage_emit_section_kernel ${its_filename} "${kernelcount}" "${DEPLOY_DIR_IMAGE}/kernel/zImage" "none"
 	fitimage_emit_devicetrees ${its_filename}
 

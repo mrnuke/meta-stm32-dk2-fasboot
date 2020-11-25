@@ -26,6 +26,19 @@ The layer setup should look like the following:
 	meta-optee            <path-to>/meta-linaro/meta-optee  8
 	meta-horseshift       <path-to>/meta-horseshift  9
 
+### Enabling image signing
+
+Bootloader images can be signed automatically by the build; however this must
+be configured separately from the rest of the build. The key must be an ECDSA
+private key. The signing key for development boards can be found in
+_meta-horseshift/keys/_ . The signing key for production releases is not
+included in this repository.
+
+  1. Copy the key to <build_dir/conf>
+  2. Edit conf/local.conf to enable key signing:
+
+	STM32_SIGNING_KEY = "${TOPDIR}/conf/signing-key.pem"
+	STM32_SIGNING_ENABLE = "1"
 
 ### Build the images
 

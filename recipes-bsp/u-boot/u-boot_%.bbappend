@@ -8,6 +8,11 @@
 #     UBOOT_CONFIG += "nonsec"
 #     UBOOT_CONFIG[nonsec] = "stm32mp15_basic_defconfig,,u-boot.img"
 #
+# To enable image signing, the key should be copied to build/conf, and
+# the following should be added to your local.conf:
+#     STM32_SIGN_KEYDIR = "${TOPDIR}/conf/signing-key.pem"
+#     STM32_SIGNING_KEY = "1"
+#
 
 SRCREV = "v2020.10"
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=5a7450c57ffe5ae63fd732446b988025"
@@ -29,6 +34,8 @@ SRC_URI += "file://boot-delay.cfg"
 SRC_URI += "file://falcon-mode.cfg"
 SRC_URI += "file://optee.cfg"
 SRC_URI += "file://fit-image.cfg"
+
+DEPENDS += "stm32mp-keygen-native"
 
 SPL_BINARY = "spl/u-boot-spl.stm32"
 SPL_BINARYNAME = "${@os.path.basename(d.getVar("SPL_BINARY"))}"
@@ -134,6 +141,12 @@ do_deploy() {
                     binarysuffix=$(echo ${binary} | cut -d'.' -f2)
                     install -m 644 ${B}/${defconfig}/u-boot-${devicetree}-${config_name}.${binarysuffix} ${DEPLOYDIR}
                     install -m 644 ${B}/${defconfig}/${SPL_NAME}-${devicetree}-${config_name}.stm32 ${DEPLOYDIR}
+
+                    if [ ${STM32_SIGNING_ENABLE} ]; then
+                        stm32-sign --key-file ${STM32_SIGNING_KEY} \
+                             --sign ${B}/${defconfig}/${SPL_NAME}-${devicetree}-${config_name}.stm32 \
+                             --output ${DEPLOYDIR}/u-boot-spl-${devicetree}-${config_name}-signed.stm32
+                    fi
 
                     if [ ${@d.getVar('UBOOT_DEPLOY_ELF_FILES')} ]; then
                         install -m 755 ${B}/${defconfig}/u-boot-${devicetree}-${config_name}.${UBOOT_ELF_SUFFIX} ${DEPLOYDIR}

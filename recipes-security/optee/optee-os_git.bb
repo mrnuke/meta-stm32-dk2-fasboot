@@ -27,7 +27,7 @@ EXTRA_OEMAKE = "PLATFORM=${OPTEE_PLATFORM} \
 TARGET_CFLAGS += "--sysroot=${STAGING_DIR_HOST}"
 EXTRA_OEMAKE += "LDFLAGS="
 
-python do_configure() {
+python __anonymous() {
     # Avoid ugly backtraces and make sure TZDRAM start is in a valid format
     tzdram_start = d.getVar('OPTEE_TZDRAM_START')
     if tzdram_start:
@@ -36,7 +36,13 @@ python do_configure() {
         except ValueError:
             bb.fatal('OPTEE_TZDRAM_START=' + tzdram_start + ' is not valid')
 
-        d.setVar('TZDRAM_FLAGS', 'CFG_TZDRAM_START=' + hex(tzdram_address))
+        # Use tzdram_start to guess if we're on a 512 MB board or 1GB board
+        dram_size = 512 << 20
+        if tzdram_address > 0xc0000000 + dram_size:
+            dram_size = 1024 << 20
+
+        d.setVar('TZDRAM_FLAGS', 'CFG_TZDRAM_START=' + hex(tzdram_address) +
+                                ' CFG_DRAM_SIZE=' + hex(dram_size))
 }
 
 do_install() {

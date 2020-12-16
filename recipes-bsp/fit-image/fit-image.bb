@@ -12,7 +12,7 @@ LICENSE = "GPLv2"
 # installed in ${STAGING_BASELIBDIR}/firmware/
 #
 
-DEPENDS = "virtual/kernel optee-os"
+DEPENDS = "virtual/kernel optee-os devicetree-overlays"
 
 UBOOT_LOADADDRESS = "${UBOOT_ENTRYPOINT}"
 KERNEL_IMAGETYPES += "fitImage"

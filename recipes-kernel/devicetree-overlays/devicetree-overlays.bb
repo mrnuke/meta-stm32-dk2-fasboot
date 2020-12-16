@@ -1,0 +1,43 @@
+SUMMARY = "Devicetree overlays for stm32mp1 boards"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
+
+DEPENDS = "dtc-native"
+
+COMPATIBLE_MACHINE = "(stm32mp)"
+KERNEL_BOOTARGS ?= ""
+
+python do_configure() {
+    consoles = d.getVar('SERIAL_CONSOLES').split()
+    other_args = d.getVar('KERNEL_BOOTARGS')
+
+    (baud, console) = consoles[0].split(';')
+    arg = f'console={console},{baud} {other_args}';
+
+    dts = open('bootargs.dts', 'w')
+
+    dts.writelines( [
+        '/dts-v1/;\n',
+        '/plugin/;\n',
+        '/ {\n',
+        '	fragment@1 {\n',
+        '		target-path = "/chosen";\n',
+        '		__overlay__ {\n',
+        f'			bootargs = "{arg}";\n',
+        '		};\n',
+        '	};\n',
+        '};\n',
+    ])
+
+    dts.close()
+}
+
+do_compile() {
+	dtc ${S}/bootargs.dts --out ${B}/bootargs.dto
+}
+
+do_install() {
+    install -d ${D}${nonarch_base_libdir}/firmware/
+    install -m 644 ${B}/bootargs.dto ${D}${nonarch_base_libdir}/firmware/
+}
+FILES_${PN} = "${nonarch_base_libdir}/firmware/"

@@ -1,0 +1,32 @@
+From 2bae4dc8a5904a27e23080d0a568babaf1d2c9dd Mon Sep 17 00:00:00 2001
+From: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+Date: Thu, 30 Sep 2021 17:55:58 -0500
+Subject: [PATCH] [WIP] stm32mp: dts: Don't remove OPTEE nodes
+
+---
+ arch/arm/dts/stm32mp157a-dk1-u-boot.dtsi | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/arch/arm/dts/stm32mp157a-dk1-u-boot.dtsi b/arch/arm/dts/stm32mp157a-dk1-u-boot.dtsi
+index fb60549f4d..774b6a677f 100644
+--- a/arch/arm/dts/stm32mp157a-dk1-u-boot.dtsi
++++ b/arch/arm/dts/stm32mp157a-dk1-u-boot.dtsi
+@@ -29,7 +29,6 @@
+ 	};
+ #endif
+ 
+-#ifdef CONFIG_STM32MP15x_STM32IMAGE
+ 	/* only needed for boot with TF-A, witout FIP support */
+ 	firmware {
+ 		optee {
+@@ -48,7 +47,6 @@
+ 			u-boot,dm-spl;
+ 		};
+ 	};
+-#endif
+ 
+ 	led {
+ 		red {
+-- 
+2.31.1
+

@@ -3,6 +3,7 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
 
 DEPENDS = "dtc-native"
+SRC_URI = "file://dk2-can1-enable.dts"
 
 COMPATIBLE_MACHINE = "(stm32mp)"
 KERNEL_BOOTARGS ?= ""
@@ -35,6 +36,10 @@ python do_configure() {
 
 do_compile() {
 	dtc ${S}/bootargs.dts --out ${B}/bootargs.dto
+
+	for dts in ${WORKDIR}/*.dts; do
+		dtc $dts --out ${B}/$(basename $dts ".dts").dto
+	done
 }
 
 

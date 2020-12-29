@@ -1,0 +1,13 @@
+/dts-v1/;
+/plugin/;
+/ {
+	fragment@1 {
+		target = <&m_can1>;
+		__overlay__ {
+			pinctrl-names = "default", "sleep";
+			pinctrl-0 = <&m_can1_pins_b> ;
+			pinctrl-1 = <&m_can1_sleep_pins_b>;
+			status = "okay";
+		};
+	};
+};

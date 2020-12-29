@@ -32,12 +32,14 @@ python do_configure() {
     dts.close()
 }
 
+
 do_compile() {
 	dtc ${S}/bootargs.dts --out ${B}/bootargs.dto
 }
 
+
 do_install() {
-    install -d ${D}${nonarch_base_libdir}/firmware/
-    install -m 644 ${B}/bootargs.dto ${D}${nonarch_base_libdir}/firmware/
+	install -d ${D}${nonarch_base_libdir}/firmware/
+	install -m 644 ${B}/*.dto ${D}${nonarch_base_libdir}/firmware/
 }
 FILES_${PN} = "${nonarch_base_libdir}/firmware/"

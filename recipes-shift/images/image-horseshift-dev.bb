@@ -11,6 +11,8 @@ IMAGE_FEATURES += "\
 	"
 
 IMAGE_INSTALL_append = "\
+	can-utils \
+	iproute2 \
 	ldd \
 	nano \
 	optee-examples \

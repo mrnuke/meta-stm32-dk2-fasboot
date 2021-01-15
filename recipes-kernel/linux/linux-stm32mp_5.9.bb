@@ -20,7 +20,6 @@ SRC_URI[sha256sum] = "ba4a11e93896305835c630969cf330ae808b0e43f09b375b510cde1bd0
 
 SRC_URI += "file://fragment-01-multiv7_cleanup.cfg"
 SRC_URI += "file://fragment-02-multiv7_addons.cfg"
-SRC_URI += "file://fragment-03-systemd.cfg"
 SRC_URI += "file://fragment-04-optee.cfg"
 SRC_URI += "file://fragment-05-modules.cfg"
 SRC_URI += "file://fragment-06-signature.cfg"

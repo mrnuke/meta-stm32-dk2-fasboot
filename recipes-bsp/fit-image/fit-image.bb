@@ -1,6 +1,17 @@
 SUMMARY = "Combined OP-TEE and Linux image for stm32mp"
 LICENSE = "GPLv2"
 
+#
+# Adding devicetree overlays example:
+#
+#    KERNEL_DEVICETREE = "board-one.dtb device-two.dtb"
+#    DEVICETREE_OVERLAYS[board-one] = "enable-foo"
+#    DEVICETREE_OVERLAYS[device-two] = "disable-bar enable-baz"
+#
+# Where 'enable-foo.dto', 'disable-bar.dto', and 'enable-baz.dto' are already
+# installed in ${STAGING_BASELIBDIR}/firmware/
+#
+
 DEPENDS = "virtual/kernel optee-os"
 
 UBOOT_LOADADDRESS = "${UBOOT_ENTRYPOINT}"
@@ -108,6 +119,13 @@ def fitimage_emit_images_section(d, its):
     linux_bin = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), 'kernel/zImage')
     binaries = [optee_bin, linux_bin]
 
+    overlay_map = d.getVarFlags('DEVICETREE_OVERLAYS') or {}
+    overlays = set()
+
+    for dtb in d.getVar('KERNEL_DEVICETREE').split():
+        devicetree, _ = os.path.splitext(dtb)
+        overlays.update(overlay_map.get(devicetree, '').split())
+
     its.write('	images {')
     fitimage_emit_optee(d, its, 1, optee_bin, 'none')
     fitimage_emit_linux(d, its, 1, linux_bin, 'none')
@@ -116,6 +134,11 @@ def fitimage_emit_images_section(d, its):
         dtb_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), 'kernel', dtb)
         fitimage_emit_dtb(d, its, dtb, dtb_path)
         binaries.append(dtb_path)
+
+    for dto in overlays:
+        dto_path = os.path.join(d.getVar('STAGING_BASELIBDIR'), 'firmware', dto + '.dto')
+        fitimage_emit_dtb(d, its, dto + '.dto', dto_path)
+        binaries.append(dto_path)
 
     its.write('	};\n')
 
@@ -133,8 +156,13 @@ def fitimage_emit_configurations_section(d, its):
     default_dtb = d.getVar('KERNEL_DEVICETREE').split()[0]
     its.write(f'		default = "secure@{default_dtb}";\n')
 
+    overlay_map = d.getVarFlags('DEVICETREE_OVERLAYS') or {}
+
     for dtb in d.getVar('KERNEL_DEVICETREE').split():
-        dtb = [dtb]
+        devicetree, _ = os.path.splitext(dtb)
+        overlays = overlay_map.get(devicetree, '').split()
+        dtb = [dtb] + [dto + '.dto' for dto in overlays]
+
         fitimage_emit_config_secure(d, its, 1, dtb, 1)
 
     its.write('	};\n')

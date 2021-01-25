@@ -20,96 +20,142 @@ python __anonymous () {
         bb.fatal('kernel zImage is required, but is not built. Check KERNEL_IMAGETYPES')
 }
 
-fitimage_emit_section_optee() {
-	local its_filename=$1
-	local entry_number=$2
-	local optee_image=$3
-	local compression=$4
 
-	kernel_csum="${FIT_HASH_ALG}"
+def fitimage_emit_optee(d, its, entry_number, optee_image, compression):
+    hash_algo = d.getVar('FIT_HASH_ALG')
+    arch = d.getVar('UBOOT_ARCH')
+    load_address = d.getVar('OPTEE_LOADADDRESS')
+    entry_address = d.getVar('OPTEE_ENTRYPOINT')
 
-	cat << EOF >> ${its_filename}
-                optee@${entry_number} {
-                        description = "OP-TEE secure world firmware";
-                        data = /incbin/("${optee_image}");
-                        type = "kernel";
-                        arch = "${UBOOT_ARCH}";
-                        os = "linux";
-                        compression = "${compression}";
-                        load = <${OPTEE_LOADADDRESS}>;
-                        entry = <${OPTEE_ENTRYPOINT}>;
-                        hash@1 {
-                                algo = "${kernel_csum}";
-                        };
-                };
-EOF
-}
+    its.writelines([
+        f'		optee@{entry_number} {{\n',
+        '			description = "OP-TEE secure world firmware";\n',
+        f'			data = /incbin/("{optee_image}");\n',
+        '			type = "kernel";\n',
+        f'			arch = "{arch}";\n',
+        '			os = "linux";\n',
+        f'			compression = "{compression}";\n',
+        f'			load = <{load_address}>;\n',
+        f'			entry = <{entry_address}>;\n',
+        '			hash@1 {\n',
+        f'				algo = "{hash_algo}";\n',
+        '			};\n',
+        '		};\n',
+    ])
 
-fitimage_emit_section_config_secure() {
-	local its_filename=$1
-	local optee_id=$2
-	local devicetree=$3
-	local kernel_id=$4
-	local write_default_line=$5
-	local default_line=""
 
-	kernel_csum="${FIT_HASH_ALG}"
+def fitimage_emit_linux(d, its, entry_number, kernel_image, compression):
+    hash_algo = d.getVar('FIT_HASH_ALG')
+    arch = d.getVar('UBOOT_ARCH')
+    load_address = d.getVar('UBOOT_LOADADDRESS')
+    entry_address = d.getVar('UBOOT_ENTRYPOINT')
 
-	if [ "${write_default_line}" = "1" ]; then
-		default_line="default = \"secure@${devicetree}\";"
-	fi
+    its.writelines([
+        f'		kernel@{entry_number} {{\n',
+        '			description = "Linux kernel";\n',
+        f'			data = /incbin/("{kernel_image}");\n',
+        '			type = "kernel";\n',
+        f'			arch = "{arch}";\n',
+        '			os = "linux";\n',
+        f'			compression = "{compression}";\n',
+        f'			load = <{load_address}>;\n',
+        f'			entry = <{entry_address}>;\n',
+        '			hash@1 {\n',
+        f'				algo = "{hash_algo}";\n',
+        '			};\n',
+        '		};\n',
+    ])
 
-	cat << EOF >> ${its_filename}
-		${default_line}
-                secure@${devicetree} {
-			description = "Linux with OP-TEE in CrustZone™";
-			kernel = "optee@${optee_id}";
-			fdt = "fdt@${devicetree}";
-			loadables = "kernel@${kernel_id}";
-                        hash@1 {
-                                algo = "${kernel_csum}";
-                        };
-                };
-EOF
-}
 
-fitimage_emit_devicetrees() {
-	local its_filename=$1
+def fitimage_emit_dtb(d, its, entry_number, dtb_bin):
+    hash_algo = d.getVar('FIT_HASH_ALG')
+    arch = d.getVar('UBOOT_ARCH')
 
-	for DTB in ${KERNEL_DEVICETREE}; do
-		DTB_PATH="${DEPLOY_DIR_IMAGE}/kernel/${DTB}"
-		fitimage_emit_section_dtb ${its_filename} ${DTB} ${DTB_PATH}
-	done
-}
+    its.writelines([
+        f'		fdt@{entry_number} {{\n',
+        '			description = "Flattened Device Tree blob";\n',
+        f'			data = /incbin/("{dtb_bin}");\n',
+        '			type = "flat_dt";\n',
+        f'			arch = "{arch}";\n',
+        '			compression = "none";\n',
+        '			hash@1 {\n',
+        f'				algo = "{hash_algo}";\n',
+        '			};\n',
+        '		};\n',
+    ])
 
-fitimage_emit_images_section() {
-	local its_filename=$1
-	local kernelcount="1"
 
-	fitimage_emit_section_maint ${its_filename} imagestart
+def fitimage_emit_config_secure(d, its, optee_id, devicetrees, kernel_id):
+    hash_algo = d.getVar('FIT_HASH_ALG')
 
-	fitimage_emit_section_optee ${its_filename} "${kernelcount}" "${STAGING_BASELIBDIR}/firmware/tee.bin" "none"
-	fitimage_emit_section_kernel ${its_filename} "${kernelcount}" "${DEPLOY_DIR_IMAGE}/kernel/zImage" "none"
-	fitimage_emit_devicetrees ${its_filename}
+    list_of_fdts = ', '.join([f'"fdt@{fdt}"' for fdt in devicetrees])
 
-	fitimage_emit_section_maint ${its_filename} sectend
+    its.writelines([
+        f'		secure@{devicetrees[0]} {{\n',
+        f'			description = "Linux with OP-TEE for {devicetrees[0]}";\n',
+        f'			kernel = "optee@{optee_id}";\n',
+        f'			fdt = {list_of_fdts};\n',
+        f'			loadables = "kernel@{kernel_id}";\n',
+        '			hash@1 {\n',
+        f'				algo = "{hash_algo}";\n',
+        '			};\n',
+        '		};\n',
+    ])
 
-}
 
-fitimage_emit_configurations_section() {
-	local its_filename=$1
-	local kernelcount="1"
+def fitimage_emit_images_section(d, its):
+    optee_bin = os.path.join(d.getVar('STAGING_BASELIBDIR'), 'firmware/tee.bin')
+    linux_bin = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), 'kernel/zImage')
+    binaries = [optee_bin, linux_bin]
 
-	fitimage_emit_section_maint ${its_filename} confstart
+    its.write('	images {')
+    fitimage_emit_optee(d, its, 1, optee_bin, 'none')
+    fitimage_emit_linux(d, its, 1, linux_bin, 'none')
 
-	i=1
-	for DTB in ${KERNEL_DEVICETREE}; do
-		fitimage_emit_section_config_secure ${its_filename} "${kernelcount}" "${DTB}" "1" "`expr ${i} = 1`"
-		i=`expr ${i} + 1`
-	done
+    for dtb in d.getVar('KERNEL_DEVICETREE').split():
+        dtb_path = os.path.join(d.getVar('DEPLOY_DIR_IMAGE'), 'kernel', dtb)
+        fitimage_emit_dtb(d, its, dtb, dtb_path)
+        binaries.append(dtb_path)
 
-	fitimage_emit_section_maint ${its_filename} sectend
-}
+    its.write('	};\n')
+
+    # Trying to run mkimage with missing binaries will cause a long backtrace
+    # Make sure all the binaries exist, or stop right now.
+    for image in binaries:
+        if not os.path.exists(image):
+            bb.fatal(f'Binary image not found: {image}')
+
+
+def fitimage_emit_configurations_section(d, its):
+
+    its.write('	configurations {')
+
+    default_dtb = d.getVar('KERNEL_DEVICETREE').split()[0]
+    its.write(f'		default = "secure@{default_dtb}";\n')
+
+    for dtb in d.getVar('KERNEL_DEVICETREE').split():
+        dtb = [dtb]
+        fitimage_emit_config_secure(d, its, 1, dtb, 1)
+
+    its.write('	};\n')
+
+def fitimage_write_its(d, its):
+    distro = d.getVar('DISTRO_NAME')
+    version = d.getVar('PV')
+    machine = d.getVar('MACHINE')
+
+    its.writelines( [
+        '/dts-v1/\n;',
+        '/ {\n',
+        f'	description = "U-Boot fitImage for {distro}/{version}/{machine}";\n',
+        '	#address-cells = <1>;\n'
+    ])
+
+    fitimage_emit_images_section(d, its)
+    fitimage_emit_configurations_section(d, its)
+
+    its.write('};\n')
+
 
 # Both run_mkimage and do_assemble_fitimage must agree that the .its file
 # is located in ${B}/fit-image.its
@@ -120,21 +166,17 @@ run_mkimage() {
 		${B}/fitImage
 }
 
-fitimage_assemble() {
-	local its_filename=$1
-	local fit_image=$2
-	local ramdisk=$3
 
-	rm -f ${its_filename} arch/${ARCH}/boot/${fit_image}
+python do_assemble_fitimage() {
+    if 'fitImage' not in d.getVar('KERNEL_IMAGETYPES'):
+        return False
 
-	fitimage_emit_fit_header ${its_filename}
+    its_filename = os.path.join(d.getVar('B'), 'fit-image.its')
 
-	fitimage_emit_images_section ${its_filename}
-	fitimage_emit_configurations_section ${its_filename}
+    with open(its_filename, 'w') as its:
+        fitimage_write_its(d, its)
 
-	fitimage_emit_section_maint ${its_filename} fitend
-
-	run_mkimage
+    bb.build.exec_func('run_mkimage', d)
 }
 
 do_install() {

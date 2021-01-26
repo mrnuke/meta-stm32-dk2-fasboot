@@ -111,6 +111,15 @@ fitimage_emit_configurations_section() {
 	fitimage_emit_section_maint ${its_filename} sectend
 }
 
+# Both run_mkimage and do_assemble_fitimage must agree that the .its file
+# is located in ${B}/fit-image.its
+run_mkimage() {
+	uboot-mkimage \
+		${@'-D "${UBOOT_MKIMAGE_DTCOPTS}"' if len('${UBOOT_MKIMAGE_DTCOPTS}') else ''} \
+		-f ${B}/fit-image.its \
+		${B}/fitImage
+}
+
 fitimage_assemble() {
 	local its_filename=$1
 	local fit_image=$2
@@ -125,10 +134,7 @@ fitimage_assemble() {
 
 	fitimage_emit_section_maint ${its_filename} fitend
 
-	uboot-mkimage \
-		${@'-D "${UBOOT_MKIMAGE_DTCOPTS}"' if len('${UBOOT_MKIMAGE_DTCOPTS}') else ''} \
-		-f ${its_filename} \
-		${fit_image}
+	run_mkimage
 }
 
 do_install() {

@@ -207,6 +207,10 @@ python do_assemble_fitimage() {
     bb.build.exec_func('run_mkimage', d)
 }
 
+# kernel zImage and dtbs are not installed to sysroot. We get those files from
+# ${DEPLOY_DIR_IMAGE}. We need the kernel do_deploy() to have executed
+do_assemble_fitimage[deptask] = "do_deploy"
+
 do_install() {
 	install -D -m 0644 ${B}/fitImage ${D}/boot/fit-image-unsigned-${KERNEL_FIT_NAME}.img
 	ln -snf fit-image-unsigned-${KERNEL_FIT_NAME}.img "${D}/boot/fit-image-unsigned-${KERNEL_FIT_LINK_NAME}"

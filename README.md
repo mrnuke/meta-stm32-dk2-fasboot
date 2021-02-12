@@ -44,6 +44,16 @@ included in this repository.
 
 	$ bitbake image-horseshift u-boot
 
+### Normal vs -dev images
+
+The __image-horseshift__ image provides all the packages and functionality
+required for running a secure boot flow, and 3D graphics. However, for poking
+around and debugging __image-horseshift-dev__ provides a better selection of
+tools. These include the GDB debugger, SSH server, DHCP and zeroconf networking
+support, and various command-line utilities. __image-horseshift-dev__ is
+designed to make life easier in the lab, but  __image-horseshift__ should be
+usable in the field.
+
 
 ## Installing to SD card
 

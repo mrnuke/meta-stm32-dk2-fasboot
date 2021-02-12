@@ -7,6 +7,7 @@ require image-horseshift.bb
 
 IMAGE_FEATURES += "\
 	ssh-server-dropbear \
+	tools-debug \
 	"
 
 IMAGE_INSTALL_append = "\

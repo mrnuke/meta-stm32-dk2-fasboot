@@ -73,10 +73,10 @@ indicated in bold are hardcoded and the partition __must__ start there.
 ### Manual installation
 
 After the build, images are found in __tmp-glibc/deploy/images/stm32mp1/__
-NOTE: replace __-ev1__ with __-dk2__ if using the smaller DK2 board.
+NOTE: replace __-dk2__ with __-ev1__ if using the larger EV1 board.
 
-	$ cp bootloader/u-boot-spl-stm32mp157c-ev1-nonsec.stm32 /dev/mmcblk0p1
-	$ cp bootloader/u-boot-stm32mp157c-ev1-nonsec.img /dev/mmcblk0p3
+	$ cp bootloader/u-boot-spl-stm32mp157c-dk2-nonsec.stm32 /dev/mmcblk0p1
+	$ cp bootloader/u-boot-stm32mp157c-dk2-nonsec.img /dev/mmcblk0p3
 	$ cp fit-image-unsigned-stm32mp1 /dev/mmcblk0p4
 	$ cp image-horseshift-stm32mp1.ext4 /dev/mmcblk0p7
 
@@ -95,7 +95,7 @@ Finally, enter the following command to configure falcon mode:
 	> setenv bootargs console=ttySTM0,2000000 root=/dev/mmcblk0p7 init=/bin/fastinit
 	> setenv bootm_boot_mode sec
 
-	> spl export fdt $loadaddr#secure@stm32mp157c-ev1.dtb
+	> spl export fdt $loadaddr#secure@stm32mp157c-dk2.dtb
 	> mmc write $fdtargsaddr 0x9800 0x8000
 
 Reboot the board, and do not hold any buttons. The kernel should now boot.

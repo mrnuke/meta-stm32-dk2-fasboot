@@ -99,3 +99,8 @@ Finally, enter the following command to configure falcon mode:
 	> mmc write $fdtargsaddr 0x9800 0x8000
 
 Reboot the board, and do not hold any buttons. The kernel should now boot.
+
+
+## Cross-compiling packages out-of-bitbake (SDK version)
+
+See [SDK_HOW_TO.md](SDK_HOW_TO.md)

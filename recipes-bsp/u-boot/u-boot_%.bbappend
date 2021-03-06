@@ -14,7 +14,7 @@
 #     STM32_SIGNING_KEY = "1"
 #
 
-SRCREV = "v2020.10"
+SRCREV = "v2021.01"
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=5a7450c57ffe5ae63fd732446b988025"
 
 FILESEXTRAPATHS_append := ":${THISDIR}/patches"
@@ -22,13 +22,10 @@ FILESEXTRAPATHS_append := ":${THISDIR}/config"
 
 SRC_URI += "file://0001-stm32mp1-Add-support-for-baudrates-higher-than-11520.patch"
 SRC_URI += "file://0002-stm32mp1-Add-support-for-falcon-mode-boot.patch"
-SRC_URI += "file://0003-mmc-stm32_sdmmc2-Use-mmc_of_parse-to-read-host-capab.patch"
-SRC_URI += "file://0004-mmc-mmc_of_parse-Enable-52-MHz-support-with-cap-mmc-.patch"
 SRC_URI += "file://0005-fit-Provide-default-symbol-for-board_fit_config_name.patch"
 SRC_URI += "file://0006-spl-fit-Prefer-a-malloc-d-buffer-for-loading-images.patch"
 SRC_URI += "file://0007-stm32mp1-Increase-SPL-malloc-size.patch"
 SRC_URI += "file://0008-HACK-stm32mp1-Drop-call-to-tee_find_device.patch"
-SRC_URI += "file://1001-Revert-Fix-data-abort-caused-by-mis-aligning-FIT-dat.patch"
 SRC_URI += "file://baudrate.cfg"
 SRC_URI += "file://boot-delay.cfg"
 SRC_URI += "file://falcon-mode.cfg"

@@ -82,9 +82,6 @@ def fitimage_emit_dtb(d, its, entry_number, dtb_bin):
     hash_algo = d.getVar('FIT_HASH_ALG')
     arch = d.getVar('UBOOT_ARCH')
 
-    # U-Boot doesn't fully understand where to load the DTB, so force an address
-    fdt_loadaddr_workaround = '0xc8000000' if dtb_bin.endswith('.dtb') else '0xc6000000'
-
     its.writelines([
         f'		fdt-{entry_number} {{\n',
         '			description = "Flattened Device Tree blob";\n',
@@ -92,7 +89,6 @@ def fitimage_emit_dtb(d, its, entry_number, dtb_bin):
         '			type = "flat_dt";\n',
         f'			arch = "{arch}";\n',
         '			compression = "none";\n',
-        f'			load = <{fdt_loadaddr_workaround}>;\n'
         '			hash-1 {\n',
         f'				algo = "{hash_algo}";\n',
         '			};\n',

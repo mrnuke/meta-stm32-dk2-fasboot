@@ -1,0 +1,104 @@
+default:
+    tags: ["openembedded"]
+    image: openembedded-builder:fc32
+    cache:
+        key: ${CI_PIPELINE_CREATED_AT}-${CI_PIPELINE_ID}
+        paths:
+            - build-gitlab/sstate-cache/
+            - bitbake/
+            - openembedded-core/
+            - meta-openembedded/
+            - meta-linaro/
+
+variables:
+        GITREV_OE_CORE: "2020-10.2-gatesgarth"
+        GITREV_META_OE: "b9dcf17700014dec679307dc1247882dccd439ca"
+        GITREV_BITBAKE: "1.48.1"
+        GITREV_LINARO:  "5d597715e66ddda317557ff2466fb236b7d9e7fc"
+
+stages:
+    - checkout
+    - configure
+    - build
+
+# In order to be able to test the build, we need other repositories. We can't
+# add them as .gitmodules, because meta-horseshift is a submodule itself.
+# We solve this by checking out the other repos for every job. However, these
+# repositories are cached. Thus, even though the 'before_script' runs for each
+# job, the git checkouts should only run once per pipeline.
+.fetch_depends: &fetch_dependencies
+    before_script:
+        - '[ ! -d "openembedded-core" ] && git clone git://git.openembedded.org/openembedded-core'
+        - pushd openembedded-core && git checkout ${GITREV_OE_CORE}
+        - popd
+        - '[ ! -d "meta-openembedded" ] && git clone git://git.openembedded.org/meta-openembedded'
+        - pushd meta-openembedded && git checkout ${GITREV_META_OE}
+        - popd
+        - '[ ! -d "bitbake" ] && git clone git://git.openembedded.org/bitbake'
+        - pushd bitbake && git checkout ${GITREV_BITBAKE}
+        - popd
+        - '[ ! -d "meta-linaro" ] && git clone git://git.linaro.org/openembedded/meta-linaro.git'
+        - pushd meta-linaro && git checkout ${GITREV_LINARO}
+        - popd
+
+# The purpose of the "checkout" stage is to isolate build failures that result
+# from fetch errors. Even though every other stage will run through the checkout
+# step, the repositories are cached between jobs. Thus, git checkout normally
+# only runs in this stage. If one of the repositories cannot be fetched, the
+# error will most likely be exposed here, instead of the build stage.
+checkout:
+    <<: *fetch_dependencies
+    stage: checkout
+    script: "true"
+
+local.conf:
+    <<: *fetch_dependencies
+    stage: configure
+    script:
+        - source openembedded-core/oe-init-build-env build-gitlab
+        - sed '/^[[:space:]]*#/d' -i conf/local.conf
+        - sed '/^[[:space:]]*$/d' -i conf/local.conf
+        - sed '/^[[:space:]]*MACHINE .*/d' -i conf/local.conf
+        - sed '/^[[:space:]]*DISTRO .*/d' -i conf/local.conf
+        - echo 'MACHINE = "stm32mp1"' >> conf/local.conf
+        - echo 'DISTRO = "horseshift"' >> conf/local.conf
+    artifacts:
+        paths:
+            - build-gitlab/conf/local.conf
+
+bblayers.conf:
+    <<: *fetch_dependencies
+    stage: configure
+    script:
+        - source openembedded-core/oe-init-build-env build-gitlab
+        - bitbake-layers add-layer "../meta-openembedded/meta-oe"
+        - bitbake-layers add-layer "../meta-openembedded/meta-python"
+        - bitbake-layers add-layer "../meta-linaro/meta-optee"
+        - bitbake-layers add-layer ".."
+    artifacts:
+        paths:
+            - build-gitlab/conf/bblayers.conf
+
+rootfs:
+    <<: *fetch_dependencies
+    stage: build
+    script:
+        - source openembedded-core/oe-init-build-env build-gitlab
+        - time bitbake image-horseshift
+    artifacts:
+        expire_in: 1 week
+        paths:
+            - build-gitlab/tmp-glibc/deploy/images/stm32mp1/fit-image-*.img
+            - build-gitlab/tmp-glibc/deploy/images/stm32mp1/image-horseshift-*.ext4
+
+U-Boot:
+    <<: *fetch_dependencies
+    stage: build
+    script:
+        - source openembedded-core/oe-init-build-env build-gitlab
+        - time bitbake u-boot
+    artifacts:
+        expire_in: 1 week
+        paths:
+            - build-gitlab/tmp-glibc/deploy/images/stm32mp1/bootloader/*.img
+            - build-gitlab/tmp-glibc/deploy/images/stm32mp1/bootloader/*.stm32

@@ -2,7 +2,7 @@ default:
     tags: ["openembedded"]
     image: openembedded-builder:fc32
     cache:
-        key: ${CI_COMMIT_REF_SLUG}
+        key: meta-horseshift-devel
         paths:
             - build-gitlab/sstate-cache/
             - bitbake/

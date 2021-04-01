@@ -14,8 +14,8 @@ diff --git a/arch/arm/mach-stm32mp/fdt.c b/arch/arm/mach-stm32mp/fdt.c
 index 0de1d82291..f19c481a7c 100644
 --- a/arch/arm/mach-stm32mp/fdt.c
 +++ b/arch/arm/mach-stm32mp/fdt.c
-@@ -220,30 +220,6 @@ static void stm32_fdt_disable(void *fdt, int offset, u32 addr,
- 		       string, addr, name);
+@@ -224,30 +224,6 @@ static void stm32_fdt_disable(void *fdt, int offset, u32 addr,
+ 			   string, addr, name);
  }
  
 -static void stm32_fdt_disable_optee(void *blob)
@@ -45,7 +45,7 @@ index 0de1d82291..f19c481a7c 100644
  /*
   * This function is called right before the kernel is booted. "blob" is the
   * device tree that will be passed to the kernel.
-@@ -328,9 +304,5 @@ int ft_system_setup(void *blob, struct bd_info *bd)
+@@ -332,9 +308,5 @@ int ft_system_setup(void *blob, struct bd_info *bd)
  				       "st,package", pkg, false);
  	}
  

@@ -39,7 +39,7 @@ def fitimage_emit_optee(d, its, entry_number, optee_image, compression):
     entry_address = d.getVar('OPTEE_ENTRYPOINT')
 
     its.writelines([
-        f'		optee@{entry_number} {{\n',
+        f'		optee-{entry_number} {{\n',
         '			description = "OP-TEE secure world firmware";\n',
         f'			data = /incbin/("{optee_image}");\n',
         '			type = "kernel";\n',
@@ -48,7 +48,7 @@ def fitimage_emit_optee(d, its, entry_number, optee_image, compression):
         f'			compression = "{compression}";\n',
         f'			load = <{load_address}>;\n',
         f'			entry = <{entry_address}>;\n',
-        '			hash@1 {\n',
+        '			hash-1 {\n',
         f'				algo = "{hash_algo}";\n',
         '			};\n',
         '		};\n',
@@ -62,7 +62,7 @@ def fitimage_emit_linux(d, its, entry_number, kernel_image, compression):
     entry_address = d.getVar('UBOOT_ENTRYPOINT')
 
     its.writelines([
-        f'		kernel@{entry_number} {{\n',
+        f'		kernel-{entry_number} {{\n',
         '			description = "Linux kernel";\n',
         f'			data = /incbin/("{kernel_image}");\n',
         '			type = "kernel";\n',
@@ -71,7 +71,7 @@ def fitimage_emit_linux(d, its, entry_number, kernel_image, compression):
         f'			compression = "{compression}";\n',
         f'			load = <{load_address}>;\n',
         f'			entry = <{entry_address}>;\n',
-        '			hash@1 {\n',
+        '			hash-1 {\n',
         f'				algo = "{hash_algo}";\n',
         '			};\n',
         '		};\n',
@@ -86,14 +86,14 @@ def fitimage_emit_dtb(d, its, entry_number, dtb_bin):
     fdt_loadaddr_workaround = '0xc4000000' if dtb_bin.endswith('.dtb') else '0xc6000000'
 
     its.writelines([
-        f'		fdt@{entry_number} {{\n',
+        f'		fdt-{entry_number} {{\n',
         '			description = "Flattened Device Tree blob";\n',
         f'			data = /incbin/("{dtb_bin}");\n',
         '			type = "flat_dt";\n',
         f'			arch = "{arch}";\n',
         '			compression = "none";\n',
         f'			load = <{fdt_loadaddr_workaround}>;\n'
-        '			hash@1 {\n',
+        '			hash-1 {\n',
         f'				algo = "{hash_algo}";\n',
         '			};\n',
         '		};\n',
@@ -103,15 +103,15 @@ def fitimage_emit_dtb(d, its, entry_number, dtb_bin):
 def fitimage_emit_config_secure(d, its, optee_id, devicetrees, kernel_id):
     hash_algo = d.getVar('FIT_HASH_ALG')
 
-    list_of_fdts = ', '.join([f'"fdt@{fdt}"' for fdt in devicetrees])
+    list_of_fdts = ', '.join([f'"fdt-{fdt}"' for fdt in devicetrees])
 
     its.writelines([
-        f'		secure@{devicetrees[0]} {{\n',
+        f'		secure-{devicetrees[0]} {{\n',
         f'			description = "Linux with OP-TEE for {devicetrees[0]}";\n',
-        f'			kernel = "optee@{optee_id}";\n',
+        f'			kernel = "optee-{optee_id}";\n',
         f'			fdt = {list_of_fdts};\n',
-        f'			loadables = "kernel@{kernel_id}";\n',
-        '			hash@1 {\n',
+        f'			loadables = "kernel-{kernel_id}";\n',
+        '			hash-1 {\n',
         f'				algo = "{hash_algo}";\n',
         '			};\n',
         '		};\n',
@@ -158,7 +158,7 @@ def fitimage_emit_configurations_section(d, its):
     its.write('	configurations {')
 
     default_dtb = d.getVar('KERNEL_DEVICETREE').split()[0]
-    its.write(f'		default = "secure@{default_dtb}";\n')
+    its.write(f'		default = "secure-{default_dtb}";\n')
 
     overlay_map = d.getVarFlags('DEVICETREE_OVERLAYS') or {}
 

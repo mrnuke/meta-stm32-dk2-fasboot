@@ -22,7 +22,7 @@ FILESEXTRAPATHS_append := ":${THISDIR}/config"
 
 SRC_URI += "file://0001-stm32mp1-Add-support-for-baudrates-higher-than-11520.patch"
 SRC_URI += "file://0002-stm32mp1-Add-support-for-falcon-mode-boot.patch"
-SRC_URI += "file://0005-fit-Provide-default-symbol-for-board_fit_config_name.patch"
+SRC_URI += "file://0005-board-stm32mp1-Implement-board_fit_config_name_match.patch"
 SRC_URI += "file://0006-spl-fit-Prefer-a-malloc-d-buffer-for-loading-images.patch"
 SRC_URI += "file://0007-stm32mp1-Increase-SPL-malloc-size.patch"
 SRC_URI += "file://0008-HACK-stm32mp1-Drop-call-to-tee_find_device.patch"

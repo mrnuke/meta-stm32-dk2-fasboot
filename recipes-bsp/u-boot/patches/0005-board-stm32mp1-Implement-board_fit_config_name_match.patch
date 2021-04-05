@@ -1,0 +1,40 @@
+From 5aa81e06fae482a00ceafb7450ab09d902ae2283 Mon Sep 17 00:00:00 2001
+From: Alexandru Gagniuc <mr.nuke.me@gmail.com>
+Date: Mon, 14 Dec 2020 18:37:20 -0600
+Subject: [PATCH 5/5] board: stm32mp1:  Implement board_fit_config_name_match()
+
+board_fit_config_name_match() selects the correct configuration node
+for the board. This function is needed when loading a FIT image from
+SPL. Implement it.
+---
+ board/st/stm32mp1/spl.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/board/st/stm32mp1/spl.c b/board/st/stm32mp1/spl.c
+index 186f7036be..7781a3a7f1 100644
+--- a/board/st/stm32mp1/spl.c
++++ b/board/st/stm32mp1/spl.c
+@@ -5,6 +5,7 @@
+ 
+ #include <config.h>
+ #include <common.h>
++#include <dm/device.h>
+ #include <init.h>
+ #include <asm/io.h>
+ #include <asm/arch/sys_proto.h>
+@@ -91,3 +92,12 @@ void board_debug_uart_init(void)
+ #endif
+ }
+ #endif
++
++int board_fit_config_name_match(const char *name)
++{
++	if (of_machine_is_compatible("st,stm32mp157c-dk2"))
++		return !strstr(name, "stm32mp157c-dk2");
++
++	/* Okay, it's most likely an EV board */
++	return !strstr(name, "stm32mp157") + !strstr(name, "-ev");
++}
+-- 
+2.26.3
+

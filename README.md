@@ -95,7 +95,7 @@ Finally, enter the following command to configure falcon mode:
 	> setenv bootargs console=ttySTM0,2000000 root=/dev/mmcblk0p7 init=/bin/fastinit
 	> setenv bootm_boot_mode sec
 
-	> spl export fdt $loadaddr#secure@stm32mp157c-dk2.dtb
+	> spl export fdt $loadaddr#secure-stm32mp157c-dk2.dtb
 	> mmc write $fdtargsaddr 0x9800 0x8000
 
 Reboot the board, and do not hold any buttons. The kernel should now boot.

@@ -4,6 +4,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 
 DEPENDS = "dtc-native"
 SRC_URI += "file://dk2-can1-enable.dts"
+SRC_URI += "file://dk2-optee.dts"
 
 COMPATIBLE_MACHINE = "(stm32mp)"
 KERNEL_BOOTARGS ?= ""

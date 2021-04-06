@@ -1,0 +1,25 @@
+/dts-v1/;
+/plugin/;
+/ {
+	fragment-1 {
+		target-path = "/reserved-memory";
+		__overlay__ {
+			optee@de000000 {
+				reg = <0xde000000 0x02000000>;
+				no-map;
+			};
+		};
+	};
+
+	fragment-2 {
+		target-path = "/";
+		__overlay__ {
+			firmware {
+				optee {
+					compatible = "linaro,optee-tz";
+					method = "smc";
+				};
+			};
+		};
+	};
+};

@@ -32,6 +32,7 @@ SRC_URI += "file://falcon-mode.cfg"
 SRC_URI += "file://optee.cfg"
 SRC_URI += "file://fit-image.cfg"
 
+DEPENDS_remove = "swig-native"
 DEPENDS += "stm32mp-keygen-native"
 
 SPL_BINARY = "spl/u-boot-spl.stm32"

@@ -83,7 +83,7 @@ def fitimage_emit_dtb(d, its, entry_number, dtb_bin):
     arch = d.getVar('UBOOT_ARCH')
 
     # U-Boot doesn't fully understand where to load the DTB, so force an address
-    fdt_loadaddr_workaround = '0xc4000000' if dtb_bin.endswith('.dtb') else '0xc6000000'
+    fdt_loadaddr_workaround = '0xc8000000' if dtb_bin.endswith('.dtb') else '0xc6000000'
 
     its.writelines([
         f'		fdt-{entry_number} {{\n',

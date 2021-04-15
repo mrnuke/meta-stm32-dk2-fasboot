@@ -2,7 +2,7 @@ default:
     tags: ["openembedded"]
     image: openembedded-builder:fc32
     cache:
-        key: ${CI_PIPELINE_CREATED_AT}-${CI_PIPELINE_ID}
+        key: ${CI_COMMIT_REF_SLUG}
         paths:
             - build-gitlab/sstate-cache/
             - bitbake/

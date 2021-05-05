@@ -25,6 +25,7 @@ SRC_URI += "file://fragment-05-modules.cfg"
 SRC_URI += "file://fragment-06-signature.cfg"
 SRC_URI += "file://fragment-07-features-cleanup.cfg"
 SRC_URI += "file://fragment-08-modules-builtin.cfg"
+SRC_URI += "file://fragment-09-can-bus.cfg"
 SRC_URI += "file://fragment-90-big-mess.cfg"
 SRC_URI += "file://fragment-91-usb-gadget-workaround.cfg"
 

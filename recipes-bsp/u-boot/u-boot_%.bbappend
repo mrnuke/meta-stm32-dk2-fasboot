@@ -20,6 +20,7 @@ LIC_FILES_CHKSUM = "file://Licenses/README;md5=5a7450c57ffe5ae63fd732446b988025"
 FILESEXTRAPATHS_append := ":${THISDIR}/patches"
 FILESEXTRAPATHS_append := ":${THISDIR}/config"
 
+SRC_URI = "git://source.denx.de/u-boot.git"
 SRC_URI += "file://0001-stm32mp1-Add-support-for-baudrates-higher-than-11520.patch"
 SRC_URI += "file://0002-stm32mp1-Add-support-for-falcon-mode-boot.patch"
 SRC_URI += "file://0005-board-stm32mp1-Implement-board_fit_config_name_match.patch"

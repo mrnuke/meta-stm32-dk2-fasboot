@@ -11,10 +11,10 @@ default:
             - meta-linaro/
 
 variables:
-        GITREV_OE_CORE: "2020-10.2-gatesgarth"
-        GITREV_META_OE: "b9dcf17700014dec679307dc1247882dccd439ca"
-        GITREV_BITBAKE: "1.48.1"
-        GITREV_LINARO:  "5d597715e66ddda317557ff2466fb236b7d9e7fc"
+        GITREV_OE_CORE: "2021-04-hardknott"
+        GITREV_META_OE: "c3a36263f91e42302ad7c347e051cf1cd83e39f6"
+        GITREV_BITBAKE: "1.50.0"
+        GITREV_LINARO:  "fb96032b38e3064290ab0891238c92d47a45f151"
 
 stages:
     - checkout

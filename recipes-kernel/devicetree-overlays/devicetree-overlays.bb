@@ -1,6 +1,6 @@
 SUMMARY = "Devicetree overlays for stm32mp1 boards"
-LICENSE = "GPLv2"
-LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0;md5=801f80980d171dd6425610833a22dbe6"
+LICENSE = "MIT"
+LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 DEPENDS = "dtc-native"
 SRC_URI += "file://dk2-can1-enable.dts"

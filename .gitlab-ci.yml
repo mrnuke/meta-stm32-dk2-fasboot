@@ -29,16 +29,16 @@ stages:
 .fetch_depends: &fetch_dependencies
     before_script:
         - '[ ! -d "openembedded-core" ] && git clone git://git.openembedded.org/openembedded-core'
-        - pushd openembedded-core && git checkout ${GITREV_OE_CORE}
+        - pushd openembedded-core && git fetch && git checkout ${GITREV_OE_CORE}
         - popd
         - '[ ! -d "meta-openembedded" ] && git clone git://git.openembedded.org/meta-openembedded'
-        - pushd meta-openembedded && git checkout ${GITREV_META_OE}
+        - pushd meta-openembedded && git fetch && git checkout ${GITREV_META_OE}
         - popd
         - '[ ! -d "bitbake" ] && git clone git://git.openembedded.org/bitbake'
-        - pushd bitbake && git checkout ${GITREV_BITBAKE}
+        - pushd bitbake && git fetch && git checkout ${GITREV_BITBAKE}
         - popd
         - '[ ! -d "meta-linaro" ] && git clone git://git.linaro.org/openembedded/meta-linaro.git'
-        - pushd meta-linaro && git checkout ${GITREV_LINARO}
+        - pushd meta-linaro && git fetch && git checkout ${GITREV_LINARO}
         - popd
 
 # The purpose of the "checkout" stage is to isolate build failures that result

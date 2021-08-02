@@ -9,6 +9,7 @@ IMAGE_LINGUAS = "en-us"
 IMAGE_FSTYPES = "ext4 squashfs"
 
 CORE_IMAGE_EXTRA_INSTALL += " \
+	boost-serialization \
 	fastinit \
 	optee-client \
 	"

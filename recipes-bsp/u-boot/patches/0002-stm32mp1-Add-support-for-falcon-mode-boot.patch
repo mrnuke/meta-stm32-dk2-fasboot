@@ -76,13 +76,11 @@ diff --git a/include/configs/stm32mp1.h b/include/configs/stm32mp1.h
 index 9a08cbeb79..a05df7ec7d 100644
 --- a/include/configs/stm32mp1.h
 +++ b/include/configs/stm32mp1.h
-@@ -10,6 +10,14 @@
+@@ -10,6 +10,12 @@
  #include <linux/sizes.h>
  #include <asm/arch/stm32.h>
  
 +#define CONFIG_SYS_MMCSD_RAW_MODE_KERNEL_SECTOR 5154
-+#define CONFIG_SYS_MMCSD_RAW_MODE_ARGS_SECTOR 38912
-+#define CONFIG_SYS_MMCSD_RAW_MODE_ARGS_SECTORS 512
 +#define CONFIG_SYS_SPI_KERNEL_OFFS 0
 +#define CONFIG_SYS_SPI_ARGS_OFFS 0
 +#define CONFIG_SYS_SPI_ARGS_SIZE 0

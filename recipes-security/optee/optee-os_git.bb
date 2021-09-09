@@ -3,7 +3,7 @@ DESCRIPTION = "OPTEE OS"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=c1f21c4f72f372ef38a5a4aee55ec173"
 
-SRCREV = "3.10.0"
+SRCREV = "3.14.0"
 SRC_URI = "git://github.com/OP-TEE/optee_os.git"
 SRC_URI += "file://9001-HACK-plat-stm32mp1-tzc400-Replace-panic-with-error-m.patch"
 

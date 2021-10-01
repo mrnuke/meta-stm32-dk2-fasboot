@@ -4,13 +4,13 @@
 
 inherit update-rc.d
 
-FILESEXTRAPATHS_append := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:append := "${THISDIR}/${PN}:"
 SRC_URI += "file://init"
 
 INITSCRIPT_NAME = "tee-supplicant"
 INITSCRIPT_PARAMS = "defaults 10"
 
-do_install_append() {
+do_install:append() {
 	install -d ${D}${sysconfdir}/init.d
 
 	sed -e 's,/usr/sbin,${sbindir},g' \

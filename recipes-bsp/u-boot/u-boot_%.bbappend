@@ -17,8 +17,8 @@
 SRCREV = "v2021.10-rc5"
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=5a7450c57ffe5ae63fd732446b988025"
 
-FILESEXTRAPATHS_append := ":${THISDIR}/patches"
-FILESEXTRAPATHS_append := ":${THISDIR}/config"
+FILESEXTRAPATHS:append := ":${THISDIR}/patches"
+FILESEXTRAPATHS:append := ":${THISDIR}/config"
 
 SRC_URI = "git://source.denx.de/u-boot.git"
 SRC_URI += " \
@@ -33,7 +33,7 @@ SRC_URI += "file://falcon-mode.cfg"
 SRC_URI += "file://optee.cfg"
 SRC_URI += "file://fit-image.cfg"
 
-DEPENDS_remove = "swig-native"
+DEPENDS:remove = "swig-native"
 DEPENDS += "stm32mp-keygen-native"
 
 SPL_BINARY = "spl/u-boot-spl.stm32"
@@ -64,7 +64,7 @@ replace_config() {
 	done
 }
 
-do_configure_append() {
+do_configure:append() {
 	if [ -n "${OPTEE_TZDRAM_START}" ]; then
 		replace_config "CONFIG_OPTEE_TZDRAM_BASE" "${OPTEE_TZDRAM_START}"
 	fi
@@ -74,7 +74,7 @@ do_configure_append() {
 # We want to pass 'DEVICE_TREE=' option to u-boot, which the core recipe does
 # not support. Thus we have to override it
 #
-do_compile_append() {
+do_compile:append() {
     if [ -z "${UBOOT_DEVICETREES}" ]; then
         bbfatal "No u-boot devicetree. Set UBOOT_DEVICETREES appropriately"
     fi

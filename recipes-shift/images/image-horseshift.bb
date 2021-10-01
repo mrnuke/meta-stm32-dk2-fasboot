@@ -14,5 +14,5 @@ CORE_IMAGE_EXTRA_INSTALL += " \
 	optee-client \
 	"
 
-IMAGE_INSTALL_append = "kernel-image kernel-devicetree kernel-modules"
-IMAGE_INSTALL_append += "fit-image"
+IMAGE_INSTALL:append = "kernel-image kernel-devicetree kernel-modules"
+IMAGE_INSTALL:append += "fit-image"

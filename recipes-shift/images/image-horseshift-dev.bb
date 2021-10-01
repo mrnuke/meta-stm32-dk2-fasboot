@@ -10,7 +10,7 @@ IMAGE_FEATURES += "\
 	tools-debug \
 	"
 
-IMAGE_INSTALL_append = "\
+IMAGE_INSTALL:append = "\
 	can-utils \
 	iproute2 \
 	ldd \

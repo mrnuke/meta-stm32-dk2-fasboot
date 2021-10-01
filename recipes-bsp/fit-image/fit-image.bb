@@ -15,7 +15,7 @@ LICENSE = "GPLv2"
 DEPENDS = "virtual/kernel optee-os devicetree-overlays"
 
 UBOOT_LOADADDRESS = "${UBOOT_ENTRYPOINT}"
-KERNEL_IMAGETYPES += "fitImage"
+KERNEL_IMAGETYPES:append = "fitImage"
 OPTEE_TZDRAM_START ?= "0xfe000000"
 
 # OP-TEE loadaddress is 0x1c bytes below the entry point

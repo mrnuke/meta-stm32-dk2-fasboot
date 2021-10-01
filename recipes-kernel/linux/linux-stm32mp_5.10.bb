@@ -12,8 +12,8 @@ require recipes-kernel/linux/linux-yocto.inc
 LINUX_VERSION = "5.10"
 LINUX_SUBVERSION = "10"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/config-${LINUX_VERSION}:"
-FILESEXTRAPATHS_prepend := "${THISDIR}/patches-${LINUX_VERSION}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/config-${LINUX_VERSION}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/patches-${LINUX_VERSION}:"
 
 SRC_URI = "https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-${LINUX_VERSION}.${LINUX_SUBVERSION}.tar.xz"
 SRC_URI[sha256sum] = "60ed866fa951522a5255ea37ec3ac2006d3f3427d4783a13ef478464f37cdb19"

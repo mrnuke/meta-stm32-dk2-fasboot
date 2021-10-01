@@ -13,7 +13,7 @@ default:
 variables:
         GITREV_OE_CORE: "2021-04-hardknott"
         GITREV_META_OE: "c3a36263f91e42302ad7c347e051cf1cd83e39f6"
-        GITREV_BITBAKE: "1.50.0"
+        GITREV_BITBAKE: "1.50.3"
         GITREV_LINARO:  "fb96032b38e3064290ab0891238c92d47a45f151"
 
 stages:
